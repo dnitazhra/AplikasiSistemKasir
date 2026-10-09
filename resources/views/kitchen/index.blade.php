@@ -1,302 +1,258 @@
 @extends('layouts.app')
 
-@section('title', 'Layar Dapur & Bar (KDS)')
-@section('page_title', 'Kitchen Display System (KDS)')
-@section('page_subtitle', 'Antrean Pesanan Barista & Dapur Realtime')
+@section('title', 'Dapur & Bar')
+@section('page_title', 'Dapur & Bar')
+@section('page_subtitle', 'Pesanan yang sudah dibayar dan masih menunggu fulfillment.')
+
+@section('header_actions')
+    <button type="button"
+            onclick="refreshKitchen(this)"
+            class="inline-flex items-center gap-2 bg-white hover:bg-[#FAF6F0] border border-[#EADBCE] hover:border-[#D9A05B] text-[#3D231D] px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200 cursor-pointer group active:scale-95">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#C88A42] transition-transform duration-500 group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+            <path d="M16 16h5v5"/>
+        </svg>
+        <span>Muat Ulang</span>
+    </button>
+@endsection
 
 @section('content')
 <div class="space-y-6">
 
-    <!-- TOP CONTROL BAR: STATUS FILTERS & AUTO REFRESH -->
-    <div class="bg-white rounded-2xl border border-[#EADBCE] p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-        
-        <!-- Status Tabs -->
-        <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
-            <a href="{{ route('kitchen.index', ['status' => 'active']) }}" 
-               class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $statusFilter === 'active' ? 'bg-[#3D231D] text-white shadow-xs' : 'bg-[#FAF6F0] text-[#3D231D] hover:bg-[#EADBCE]' }}">
-                <span>Semua Aktif</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] {{ $statusFilter === 'active' ? 'bg-[#D9A05B] text-white' : 'bg-[#EADBCE] text-[#3D231D]' }}">
-                    {{ $counts['pending'] + $counts['cooking'] + $counts['ready'] }}
-                </span>
-            </a>
-
-            <a href="{{ route('kitchen.index', ['status' => 'pending']) }}" 
-               class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $statusFilter === 'pending' ? 'bg-amber-600 text-white shadow-xs' : 'bg-[#FAF6F0] text-amber-800 hover:bg-amber-100' }}">
-                <i class="fa-regular fa-clock"></i>
-                <span>Menunggu (Pending)</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/20">
-                    {{ $counts['pending'] }}
-                </span>
-            </a>
-
-            <a href="{{ route('kitchen.index', ['status' => 'cooking']) }}" 
-               class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $statusFilter === 'cooking' ? 'bg-blue-600 text-white shadow-xs' : 'bg-[#FAF6F0] text-blue-800 hover:bg-blue-100' }}">
-                <i class="fa-solid fa-fire-burner"></i>
-                <span>Dimasak / Diseduh</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] bg-blue-500/20">
-                    {{ $counts['cooking'] }}
-                </span>
-            </a>
-
-            <a href="{{ route('kitchen.index', ['status' => 'ready']) }}" 
-               class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $statusFilter === 'ready' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-[#FAF6F0] text-emerald-800 hover:bg-emerald-100' }}">
-                <i class="fa-solid fa-bell"></i>
-                <span>Siap Saji</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20">
-                    {{ $counts['ready'] }}
-                </span>
-            </a>
-        </div>
-
-        <!-- Live Sync Controls -->
-        <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <button type="button" id="btn-sound-toggle" onclick="toggleSound()" class="px-3 py-1.5 bg-[#FAF6F0] hover:bg-[#EADBCE] text-[#3D231D] border border-[#EADBCE] rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer" title="Nyalakan/Matikan Bunyi Bel Pesanan">
-                <i class="fa-solid fa-volume-high text-[#C88A42]" id="sound-icon"></i>
-                <span id="sound-label">Bel: ON</span>
-            </button>
-
-            <div class="flex items-center gap-2 text-xs font-medium text-[#8A7A75]">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>Auto-refresh: <strong id="refresh-counter">5s</strong></span>
+    {{-- ─── AREA UTAMA ─── --}}
+    @if($orders->isEmpty())
+        {{-- Empty State --}}
+        <div class="bg-white rounded-2xl border border-[#EADBCE] shadow-sm flex flex-col items-center justify-center py-24 px-6 text-center">
+            <div class="w-20 h-20 rounded-2xl bg-[#FDF6ED] border border-[#EADBCE] flex items-center justify-center mb-6">
+                <i class="fa-solid fa-mug-hot text-4xl text-[#D9A05B]"></i>
             </div>
-
-            <button type="button" onclick="fetchLiveOrders()" class="p-2 bg-[#FAF6F0] hover:bg-[#D9A05B] hover:text-white border border-[#EADBCE] rounded-xl text-xs text-[#3D231D] transition-colors cursor-pointer" title="Refresh Sekarang">
-                <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i>
-            </button>
+            <h3 class="text-lg font-bold text-[#3D231D] mb-2">Belum ada pesanan menunggu</h3>
+            <p class="text-sm text-[#8A7A75] max-w-sm leading-relaxed">
+                Pesanan akan muncul otomatis setelah kasir menyelesaikan pembayaran.
+            </p>
         </div>
-    </div>
-
-    <!-- ORDER TICKETS GRID -->
-    <div id="tickets-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
-        @forelse($orders as $order)
-            <div id="order-card-{{ $order->id }}" 
-                 class="bg-white rounded-2xl border-2 shadow-sm overflow-hidden flex flex-col justify-between transition-all duration-200
-                 {{ $order->kitchen_status === 'pending' ? 'border-amber-300' : '' }}
-                 {{ $order->kitchen_status === 'cooking' ? 'border-blue-400 shadow-md ring-2 ring-blue-100' : '' }}
-                 {{ $order->kitchen_status === 'ready' ? 'border-emerald-400' : '' }}
-                 {{ $order->kitchen_status === 'served' ? 'border-gray-200 opacity-70' : '' }}">
-                
+    @else
+        {{-- ─── COUNTER BADGE STRIP ─── --}}
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-hourglass-start text-amber-500"></i>
+                </div>
                 <div>
-                    <!-- TICKET HEADER -->
-                    <div class="p-4 border-b border-[#EADBCE] flex items-center justify-between
-                        {{ $order->kitchen_status === 'pending' ? 'bg-amber-50' : '' }}
-                        {{ $order->kitchen_status === 'cooking' ? 'bg-blue-50' : '' }}
-                        {{ $order->kitchen_status === 'ready' ? 'bg-emerald-50' : '' }}
-                        {{ $order->kitchen_status === 'served' ? 'bg-gray-50' : '' }}">
-                        
+                    <p class="text-2xl font-black text-[#3D231D] leading-none">{{ $counts['pending'] }}</p>
+                    <p class="text-[11px] text-[#8A7A75] mt-0.5">Menunggu</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-fire-burner text-blue-500"></i>
+                </div>
+                <div>
+                    <p class="text-2xl font-black text-[#3D231D] leading-none">{{ $counts['cooking'] }}</p>
+                    <p class="text-[11px] text-[#8A7A75] mt-0.5">Diproses</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-bell-concierge text-emerald-500"></i>
+                </div>
+                <div>
+                    <p class="text-2xl font-black text-[#3D231D] leading-none">{{ $counts['ready'] }}</p>
+                    <p class="text-[11px] text-[#8A7A75] mt-0.5">Siap Antar</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-4 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-circle-check text-gray-400"></i>
+                </div>
+                <div>
+                    <p class="text-2xl font-black text-[#3D231D] leading-none">{{ $counts['served'] }}</p>
+                    <p class="text-[11px] text-[#8A7A75] mt-0.5">Selesai Hari Ini</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- ─── FILTER TAB ─── --}}
+        <div class="bg-white rounded-2xl border border-[#EADBCE] shadow-sm px-5 py-4">
+            <div class="flex items-center gap-3 flex-wrap">
+                <span class="text-xs font-semibold text-[#8A7A75]">Status :</span>
+                <div class="flex items-center gap-2 flex-wrap">
+                    @foreach([
+                        'active'  => 'Semua Aktif',
+                        'pending' => 'Menunggu',
+                        'cooking' => 'Diproses',
+                        'ready'   => 'Siap Antar',
+                        'served'  => 'Selesai',
+                    ] as $val => $label)
+                        <a href="{{ route('kitchen.index', ['status' => $val]) }}"
+                           class="px-4 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150
+                                  {{ $statusFilter === $val
+                                      ? 'bg-[#3D231D] text-white shadow-sm'
+                                      : 'bg-[#FAF6F0] text-[#3D231D] border border-[#EADBCE] hover:bg-[#EADBCE]' }}">
+                            {{ $label }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        {{-- ─── GRID KARTU PESANAN ─── --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            @foreach($orders as $order)
+                @php
+                    $elapsed = $order->created_at->diffInMinutes(now());
+                    $statusColor = match($order->kitchen_status) {
+                        'pending' => ['bg' => 'bg-amber-100',  'text' => 'text-amber-700',  'dot' => 'bg-amber-400'],
+                        'cooking' => ['bg' => 'bg-blue-100',   'text' => 'text-blue-700',   'dot' => 'bg-blue-400'],
+                        'ready'   => ['bg' => 'bg-emerald-100','text' => 'text-emerald-700','dot' => 'bg-emerald-500'],
+                        'served'  => ['bg' => 'bg-gray-100',   'text' => 'text-gray-500',   'dot' => 'bg-gray-400'],
+                        default   => ['bg' => 'bg-gray-100',   'text' => 'text-gray-500',   'dot' => 'bg-gray-400'],
+                    };
+                    $nextStatus = match($order->kitchen_status) {
+                        'pending' => 'cooking',
+                        'cooking' => 'ready',
+                        'ready'   => 'served',
+                        default   => null,
+                    };
+                    $nextLabel = match($order->kitchen_status) {
+                        'pending' => 'Mulai Proses',
+                        'cooking' => 'Tandai Siap',
+                        'ready'   => 'Sudah Disajikan',
+                        default   => null,
+                    };
+                @endphp
+
+                <div class="bg-white rounded-2xl border border-[#EADBCE] shadow-sm hover:shadow-md transition-all flex flex-col"
+                     id="order-card-{{ $order->id }}">
+
+                    {{-- Card Header --}}
+                    <div class="px-5 pt-5 pb-4 border-b border-[#EADBCE] flex items-start justify-between gap-3">
                         <div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm font-black text-[#3D231D]">{{ $order->order_number }}</span>
-                                <span class="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase
-                                    {{ $order->order_type === 'dine_in' ? 'bg-amber-200 text-amber-900' : 'bg-blue-200 text-blue-900' }}">
+                            <span class="font-mono text-sm font-black text-[#3D231D]">{{ $order->order_number }}</span>
+                            <div class="flex items-center gap-2 mt-1.5">
+                                <span class="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md
+                                    {{ $order->order_type === 'dine_in' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700' }}">
+                                    <i class="fa-solid {{ $order->order_type === 'dine_in' ? 'fa-chair' : 'fa-bag-shopping' }} text-[9px]"></i>
                                     {{ $order->order_type === 'dine_in' ? 'Dine In' : 'Take Away' }}
                                 </span>
+                                @if($order->cafeTable)
+                                    <span class="text-[11px] font-semibold text-[#C88A42]">
+                                        <i class="fa-solid fa-table-cells-large text-[9px] mr-0.5"></i>
+                                        {{ $order->cafeTable->table_number }}
+                                    </span>
+                                @endif
                             </div>
-
-                            @if($order->cafeTable)
-                                <div class="text-xs font-bold text-[#C88A42] mt-0.5">
-                                    <i class="fa-solid fa-chair mr-1"></i>{{ $order->cafeTable->table_number }}
-                                </div>
-                            @endif
                         </div>
-
-                        <div class="text-right">
-                            <span class="text-xs font-bold text-[#3D231D] block">{{ $order->created_at->format('H:i') }}</span>
-                            <span class="text-[10px] text-[#8A7A75]">{{ $order->created_at->diffForHumans() }}</span>
+                        <div class="text-right flex-shrink-0">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold {{ $statusColor['bg'] }} {{ $statusColor['text'] }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ $statusColor['dot'] }} inline-block"></span>
+                                {{ ucfirst($order->kitchen_status) }}
+                            </span>
+                            <p class="text-[10px] text-[#8A7A75] mt-1">
+                                {{ $order->created_at->format('H:i') }} •
+                                <span class="{{ $elapsed >= 15 ? 'text-rose-500 font-bold' : '' }}">
+                                    {{ $elapsed }}m lalu
+                                </span>
+                            </p>
                         </div>
                     </div>
 
-                    <!-- TICKET ITEMS LIST -->
-                    <div class="p-4 space-y-3">
+                    {{-- Item List --}}
+                    <div class="px-5 py-4 flex-1 space-y-2.5">
                         @foreach($order->orderDetails as $detail)
-                            <div class="pb-2.5 border-b border-[#EADBCE]/50 last:border-none last:pb-0">
-                                <div class="flex items-start gap-2.5">
-                                    <span class="w-6 h-6 rounded-lg bg-[#FAF6F0] border border-[#EADBCE] text-xs font-black text-[#3D231D] flex items-center justify-center flex-shrink-0">
-                                        {{ $detail->quantity }}x
-                                    </span>
-                                    <div class="flex-1">
-                                        <h5 class="text-xs font-bold text-[#3D231D] leading-tight">{{ $detail->menu->name ?? 'Menu' }}</h5>
-                                        
-                                        <!-- Variant options -->
-                                        @if($detail->variants->isNotEmpty())
-                                            <div class="flex flex-wrap gap-1 mt-1">
-                                                @foreach($detail->variants as $var)
-                                                    <span class="text-[9px] font-semibold bg-[#FAF6F0] text-[#8A7A75] px-1.5 py-0.5 rounded border border-[#EADBCE]">
-                                                        {{ $var->variant_option_name }}
-                                                    </span>
-                                                @endforeach
-                                            </div>
-                                        @endif
-
-                                        <!-- Notes -->
-                                        @if($detail->notes)
-                                            <div class="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded-md border border-amber-200 mt-1.5">
-                                                <i class="fa-regular fa-comment-dots mr-1"></i>"{{ $detail->notes }}"
-                                            </div>
-                                        @endif
-                                    </div>
+                            <div class="flex items-start gap-2.5">
+                                <span class="w-6 h-6 rounded-lg bg-[#FDF6ED] border border-[#EADBCE] flex items-center justify-center text-[11px] font-black text-[#C88A42] flex-shrink-0 mt-0.5">
+                                    {{ $detail->quantity }}
+                                </span>
+                                <div class="min-w-0">
+                                    <p class="text-xs font-semibold text-[#3D231D] leading-snug">{{ $detail->menu->name ?? '—' }}</p>
+                                    @if($detail->variants->count())
+                                        <p class="text-[10px] text-[#8A7A75] mt-0.5">
+                                            {{ $detail->variants->pluck('variant_option_name')->implode(', ') }}
+                                        </p>
+                                    @endif
+                                    @if(!empty($detail->notes))
+                                        <p class="text-[10px] text-amber-600 mt-0.5 italic">
+                                            <i class="fa-solid fa-note-sticky text-[9px]"></i> {{ $detail->notes }}
+                                        </p>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
-                </div>
 
-                <!-- TICKET FOOTER & STATUS ACTION BUTTON -->
-                <div class="p-4 border-t border-[#EADBCE] bg-[#FAF6F0]/80">
-                    <div class="flex items-center justify-between mb-2.5 text-xs">
-                        <span class="text-[#8A7A75]">Status:</span>
-                        <span class="font-extrabold uppercase tracking-wider text-[11px]
-                            {{ $order->kitchen_status === 'pending' ? 'text-amber-700' : '' }}
-                            {{ $order->kitchen_status === 'cooking' ? 'text-blue-700' : '' }}
-                            {{ $order->kitchen_status === 'ready' ? 'text-emerald-700' : '' }}
-                            {{ $order->kitchen_status === 'served' ? 'text-gray-600' : '' }}">
-                            {{ ucfirst($order->kitchen_status) }}
+                    {{-- Card Footer --}}
+                    <div class="px-5 pb-5 pt-3 border-t border-[#EADBCE] flex items-center justify-between gap-2">
+                        <span class="text-[11px] text-[#8A7A75]">
+                            <i class="fa-solid fa-user text-[9px] mr-0.5"></i>
+                            {{ $order->user->name ?? '—' }}
                         </span>
+                        @if($nextStatus)
+                            <button type="button"
+                                    onclick="updateKitchenStatus({{ $order->id }}, '{{ $nextStatus }}', this)"
+                                    class="px-4 py-2 rounded-xl text-[11px] font-bold transition-all duration-150 cursor-pointer
+                                           {{ $order->kitchen_status === 'pending' ? 'bg-amber-500 hover:bg-amber-600 text-white' : '' }}
+                                           {{ $order->kitchen_status === 'cooking' ? 'bg-blue-500 hover:bg-blue-600 text-white' : '' }}
+                                           {{ $order->kitchen_status === 'ready'   ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : '' }}">
+                                {{ $nextLabel }}
+                            </button>
+                        @else
+                            <span class="text-[11px] text-emerald-600 font-semibold">
+                                <i class="fa-solid fa-circle-check mr-0.5"></i> Selesai
+                            </span>
+                        @endif
                     </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
 
-                    @if($order->kitchen_status === 'pending')
-                        <button type="button" onclick="updateOrderStatus({{ $order->id }}, 'cooking')"
-                                class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-2 transition-colors">
-                            <i class="fa-solid fa-fire-burner"></i>
-                            <span>Mulai Proses (Cooking)</span>
-                        </button>
-                    @elseif($order->kitchen_status === 'cooking')
-                        <button type="button" onclick="updateOrderStatus({{ $order->id }}, 'ready')"
-                                class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-2 transition-colors">
-                            <i class="fa-solid fa-bell"></i>
-                            <span>Siap Saji (Ready)</span>
-                        </button>
-                    @elseif($order->kitchen_status === 'ready')
-                        <button type="button" onclick="updateOrderStatus({{ $order->id }}, 'served')"
-                                class="w-full py-2.5 bg-[#3D231D] hover:bg-[#2A1713] text-white rounded-xl text-xs font-bold shadow-xs flex items-center justify-center gap-2 transition-colors">
-                            <i class="fa-solid fa-check"></i>
-                            <span>Sajikan ke Pelanggan (Served)</span>
-                        </button>
-                    @else
-                        <div class="text-center py-1 text-xs text-gray-500 font-semibold">
-                            Pesanan Telah Selesai
-                        </div>
-                    @endif
-                </div>
-            </div>
-        @empty
-            <div class="col-span-full bg-white rounded-2xl border border-[#EADBCE] p-12 text-center text-[#8A7A75]">
-                <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-[#FAF6F0] flex items-center justify-center text-3xl text-[#D9A05B]">
-                    <i class="fa-solid fa-mug-saucer"></i>
-                </div>
-                <h4 class="text-base font-bold text-[#3D231D]">Tidak Ada Antrean Pesanan</h4>
-                <p class="text-xs text-[#8A7A75] mt-1">Saat ini belum ada pesanan baru yang perlu disiapkan oleh Barista & Dapur.</p>
-            </div>
-        @endforelse
-    </div>
 </div>
 @endsection
 
 @push('scripts')
 <script>
-    let countdown = 5;
-    const counterEl = document.getElementById('refresh-counter');
-    const refreshIcon = document.getElementById('refresh-icon');
-
-    let soundEnabled = true;
-    let lastPendingCount = {{ $counts['pending'] }};
-    let lastTotalActive = {{ $counts['pending'] + $counts['cooking'] + $counts['ready'] }};
-
-    function toggleSound() {
-        soundEnabled = !soundEnabled;
-        const icon = document.getElementById('sound-icon');
-        const label = document.getElementById('sound-label');
-        if (soundEnabled) {
-            icon.className = 'fa-solid fa-volume-high text-[#C88A42]';
-            label.textContent = 'Bel: ON';
-            playKitchenChime();
-        } else {
-            icon.className = 'fa-solid fa-volume-xmark text-[#8A7A75]';
-            label.textContent = 'Bel: OFF';
+    function refreshKitchen(btn) {
+        if (btn) {
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
+            const svg = btn.querySelector('svg');
+            if (svg) svg.classList.add('animate-spin');
         }
+        window.location.reload();
     }
 
-    function playKitchenChime() {
-        if (!soundEnabled) return;
-        try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12); // A5
-            gain.gain.setValueAtTime(0.25, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.7);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.7);
-        } catch (e) {
-            // Audio policy might prevent auto-play before interaction
-        }
-    }
+    function updateKitchenStatus(orderId, newStatus, btn) {
+        btn.disabled = true;
+        const original = btn.textContent.trim();
+        btn.textContent = '...';
 
-    // Countdown timer for automatic sync
-    setInterval(() => {
-        countdown--;
-        if (counterEl) counterEl.textContent = countdown + 's';
-        if (countdown <= 0) {
-            countdown = 5;
-            fetchLiveOrders();
-        }
-    }, 1000);
-
-    // Update Status via AJAX
-    function updateOrderStatus(orderId, newStatus) {
         fetch(`/kitchen/${orderId}/status`, {
-            method: 'POST',
+            method: 'PATCH',
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
             body: JSON.stringify({ kitchen_status: newStatus })
         })
-        .then(res => res.json())
+        .then(r => r.json())
         .then(data => {
             if (data.success) {
+                // Reload halaman untuk refresh semua counter & status
                 window.location.reload();
             } else {
-                alert(data.message || 'Gagal mengubah status');
+                btn.disabled = false;
+                btn.textContent = original;
+                alert(data.message || 'Gagal memperbarui status.');
             }
         })
-        .catch(err => {
+        .catch(() => {
+            btn.disabled = false;
+            btn.textContent = original;
             alert('Terjadi kesalahan jaringan.');
-        });
-    }
-
-    // Live AJAX Polling
-    function fetchLiveOrders() {
-        if (refreshIcon) refreshIcon.classList.add('fa-spin');
-
-        fetch('{{ route("kitchen.orders_json") }}', {
-            headers: { 'Accept': 'application/json' }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (refreshIcon) refreshIcon.classList.remove('fa-spin');
-            if (data.success && data.counts) {
-                const newPending = data.counts.pending || 0;
-                const newTotal = (data.counts.pending || 0) + (data.counts.cooking || 0) + (data.counts.ready || 0);
-
-                if (newPending > lastPendingCount) {
-                    playKitchenChime();
-                }
-
-                if (newPending !== lastPendingCount || newTotal !== lastTotalActive) {
-                    window.location.reload();
-                }
-            }
-        })
-        .catch(err => {
-            if (refreshIcon) refreshIcon.classList.remove('fa-spin');
         });
     }
 </script>

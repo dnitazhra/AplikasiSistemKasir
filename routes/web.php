@@ -38,13 +38,14 @@ Route::middleware('auth')->group(function () {
     // RESTRIKSI AKSES / PROTECTED REDIRECTS UNTUK MENU NONAKTIF
     // (Pengguna hanya berinteraksi di Dashboard dan Terminal POS)
     // ==============================================================
-    Route::any('/bills/{any?}', function () {
-        return redirect()->route('dashboard');
-    })->where('any', '.*')->name('bills.index');
+    // 3. Bill Aktif
+    Route::get('/bills', [App\Http\Controllers\ActiveBillsController::class, 'index'])->name('bills.index');
+    Route::post('/bills/{order}/pay', [App\Http\Controllers\ActiveBillsController::class, 'payBill'])->name('bills.pay');
 
-    Route::any('/kitchen/{any?}', function () {
-        return redirect()->route('dashboard');
-    })->where('any', '.*')->name('kitchen.index');
+    // 4. Dapur & Bar
+    Route::get('/kitchen', [App\Http\Controllers\KitchenController::class, 'index'])->name('kitchen.index');
+    Route::get('/kitchen/orders-json', [App\Http\Controllers\KitchenController::class, 'ordersJson'])->name('kitchen.orders-json');
+    Route::patch('/kitchen/{order}/status', [App\Http\Controllers\KitchenController::class, 'updateStatus'])->name('kitchen.update-status');
 
     Route::get('/menus/{any?}', function () {
         return redirect()->route('dashboard');

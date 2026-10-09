@@ -119,36 +119,95 @@
             </div>
 
             <!-- NAVIGATION MENU (INDEPENDENT INTERNAL SCROLL) -->
-            <nav id="nav-menu" class="p-4 space-y-1.5 flex-1 overflow-y-auto hidden md:block">
-                <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase">Menu Utama</p>
+            <nav id="nav-menu" class="p-4 flex-1 overflow-y-auto hidden md:block">
 
-                <!-- 1. Dashboard -->
-                <a href="{{ route('dashboard') }}" 
-                   class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                    <i class="fa-solid fa-chart-pie text-base w-5 text-center {{ request()->routeIs('dashboard') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                    <span>Dashboard</span>
-                </a>
+                <!-- ─── KATEGORI: MENU UTAMA ─── -->
+                <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Menu Utama</p>
+                <div class="space-y-1 mb-4">
 
-                <!-- 2. Terminal POS -->
-                <a href="{{ route('pos.index') }}" 
-                   class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('pos.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                    <i class="fa-solid fa-cash-register text-base w-5 text-center {{ request()->routeIs('pos.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                    <span>Terminal POS</span>
-                    <span class="ml-auto text-[10px] bg-[#C88A42] text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Kasir</span>
-                </a>
+                    <!-- Dashboard (AKTIF) -->
+                    <a href="{{ route('dashboard') }}" 
+                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                        <i class="fa-solid fa-chart-pie text-base w-5 text-center {{ request()->routeIs('dashboard') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
 
-                {{-- 
-                <!-- ============================================================== -->
-                <!-- MENU NONAKTIF / DISEMBUNYIKAN SESUAI PERMINTAAN PENYEDERHANAAN -->
-                <!-- ============================================================== -->
-                <!-- 3. Bill Aktif -->
-                <!-- 4. Dapur / Bar -->
-                <!-- 5. Katalog Menu -->
-                <!-- 6. Kategori Menu -->
-                <!-- 7. Denah & Meja -->
-                <!-- 8. Karyawan & Role -->
-                <!-- 9. Pengaturan Profil -->
-                --}}
+                <!-- ─── KATEGORI: OPERASIONAL ─── -->
+                <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Operasional</p>
+                <div class="space-y-1 mb-4">
+
+                    <!-- Bill Aktif (AKTIF) -->
+                    <a href="{{ route('bills.index') }}"
+                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('bills.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                        <i class="fa-solid fa-file-invoice text-base w-5 text-center {{ request()->routeIs('bills.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                        <span>Bill Aktif</span>
+                    </a>
+
+                    <!-- Dapur & Bar (AKTIF) -->
+                    <a href="{{ route('kitchen.index') }}"
+                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                        <i class="fa-solid fa-blender text-base w-5 text-center {{ request()->routeIs('kitchen.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                        <span>Dapur &amp; Bar</span>
+                    </a>
+
+                </div>
+
+                <!-- ─── KATEGORI: MANAJEMEN DATA ─── -->
+                <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Manajemen Data</p>
+                <div class="space-y-1 mb-4">
+
+                    <!-- Kategori Produk (DISABLED) -->
+                    <span tabindex="-1"
+                          class="disabled flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm text-[#FAF6F0]/80"
+                          style="opacity:0.45; pointer-events:none; cursor:not-allowed;">
+                        <i class="fa-solid fa-tags text-base w-5 text-center text-[#D9A05B]"></i>
+                        <span>Kategori Produk</span>
+                        <span class="ml-auto text-[10px] bg-[#4A2E2B] text-[#D9A05B]/60 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Soon</span>
+                    </span>
+
+                    <!-- Denah Meja (DISABLED) -->
+                    <span tabindex="-1"
+                          class="disabled flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm text-[#FAF6F0]/80"
+                          style="opacity:0.45; pointer-events:none; cursor:not-allowed;">
+                        <i class="fa-solid fa-table-cells-large text-base w-5 text-center text-[#D9A05B]"></i>
+                        <span>Denah Meja</span>
+                        <span class="ml-auto text-[10px] bg-[#4A2E2B] text-[#D9A05B]/60 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Soon</span>
+                    </span>
+
+                    <!-- Kelola Karyawan (DISABLED) -->
+                    <span tabindex="-1"
+                          class="disabled flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm text-[#FAF6F0]/80"
+                          style="opacity:0.45; pointer-events:none; cursor:not-allowed;">
+                        <i class="fa-solid fa-users text-base w-5 text-center text-[#D9A05B]"></i>
+                        <span>Kelola Karyawan</span>
+                        <span class="ml-auto text-[10px] bg-[#4A2E2B] text-[#D9A05B]/60 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Soon</span>
+                    </span>
+                </div>
+
+                <!-- ─── KATEGORI: LAPORAN & SISTEM ─── -->
+                <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Laporan &amp; Sistem</p>
+                <div class="space-y-1 mb-2">
+
+                    <!-- Laporan Penjualan (DISABLED) -->
+                    <span tabindex="-1"
+                          class="disabled flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm text-[#FAF6F0]/80"
+                          style="opacity:0.45; pointer-events:none; cursor:not-allowed;">
+                        <i class="fa-solid fa-chart-line text-base w-5 text-center text-[#D9A05B]"></i>
+                        <span>Laporan Penjualan</span>
+                        <span class="ml-auto text-[10px] bg-[#4A2E2B] text-[#D9A05B]/60 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Soon</span>
+                    </span>
+
+                    <!-- Pengaturan Kafe (DISABLED) -->
+                    <span tabindex="-1"
+                          class="disabled flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm text-[#FAF6F0]/80"
+                          style="opacity:0.45; pointer-events:none; cursor:not-allowed;">
+                        <i class="fa-solid fa-gear text-base w-5 text-center text-[#D9A05B]"></i>
+                        <span>Pengaturan Kafe</span>
+                        <span class="ml-auto text-[10px] bg-[#4A2E2B] text-[#D9A05B]/60 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Soon</span>
+                    </span>
+                </div>
+
             </nav>
         </div>
 
@@ -157,13 +216,12 @@
             <div class="flex items-center justify-between mb-3 px-2">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-xl bg-[#D9A05B]/20 border border-[#D9A05B]/40 flex items-center justify-center text-[#D9A05B] font-bold text-sm">
-                        {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                        A
                     </div>
                     <div>
-                        <p class="text-sm font-semibold text-white leading-tight truncate w-32">{{ auth()->user()->name ?? 'Pengguna' }}</p>
-                        <span class="inline-block text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full mt-0.5 
-                            {{ (auth()->user()->role ?? '') === 'admin' ? 'bg-amber-500/20 text-amber-300' : ((auth()->user()->role ?? '') === 'barista' ? 'bg-blue-500/20 text-blue-300' : 'bg-emerald-500/20 text-emerald-300') }}">
-                            {{ auth()->user()->role ?? 'Kasir' }}
+                        <p class="text-sm font-semibold text-white leading-tight truncate w-32">Admin d'nale</p>
+                        <span class="inline-block text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full mt-0.5 bg-amber-500/20 text-amber-300">
+                            Admin
                         </span>
                     </div>
                 </div>
