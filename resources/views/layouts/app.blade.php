@@ -151,20 +151,25 @@
                         <span>Dapur &amp; Bar</span>
                     </a>
 
+                    <!-- Daftar Menu (AKTIF) -->
+                    <a href="{{ route('menus.index') }}"
+                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('menus.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                        <i class="fa-solid fa-book-open text-base w-5 text-center {{ request()->routeIs('menus.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                        <span>Daftar Menu</span>
+                    </a>
+
                 </div>
 
                 <!-- ─── KATEGORI: MANAJEMEN DATA ─── -->
                 <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Manajemen Data</p>
                 <div class="space-y-1 mb-4">
 
-                    <!-- Kategori Produk (DISABLED) -->
-                    <span tabindex="-1"
-                          class="disabled flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm text-[#FAF6F0]/80"
-                          style="opacity:0.45; pointer-events:none; cursor:not-allowed;">
-                        <i class="fa-solid fa-tags text-base w-5 text-center text-[#D9A05B]"></i>
+                    <!-- Kategori Produk (AKTIF) -->
+                    <a href="{{ route('categories.index') }}"
+                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('categories.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                        <i class="fa-solid fa-tags text-base w-5 text-center {{ request()->routeIs('categories.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                         <span>Kategori Produk</span>
-                        <span class="ml-auto text-[10px] bg-[#4A2E2B] text-[#D9A05B]/60 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Soon</span>
-                    </span>
+                    </a>
 
                     <!-- Denah Meja (DISABLED) -->
                     <span tabindex="-1"

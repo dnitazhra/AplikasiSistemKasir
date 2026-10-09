@@ -16,10 +16,11 @@ class MenuController extends Controller
 {
     public function index(Request $request): View
     {
-        $search = $request->query('search');
+        $search     = $request->query('search');
         $categoryId = $request->query('category_id');
+        $available  = $request->query('available');   // '1', '0', or null
 
-        $query = Menu::with(['category', 'variants.options']);
+        $query = Menu::with(['category', 'variants', 'orderDetails']);
 
         if ($search) {
             $query->where('name', 'like', "%{$search}%");
@@ -29,7 +30,11 @@ class MenuController extends Controller
             $query->where('category_id', $categoryId);
         }
 
-        $menus = $query->orderBy('name')->paginate(12)->withQueryString();
+        if ($available !== null && $available !== '') {
+            $query->where('is_available', (bool) $available);
+        }
+
+        $menus      = $query->orderBy('name')->paginate(12)->withQueryString();
         $categories = Category::orderBy('name')->get();
 
         return view('menus.index', compact('menus', 'categories', 'search', 'categoryId'));
