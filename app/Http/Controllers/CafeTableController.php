@@ -21,9 +21,22 @@ class CafeTableController extends Controller
             'reserved' => $tables->where('status', 'reserved')->count(),
         ];
 
+        // Kelompokkan meja khusus untuk kategori area INDOOR dan OUTDOOR
         $groupedTables = $tables->groupBy(function ($table) {
-            return strtoupper(trim($table->area ?: 'INDOOR'));
+            $area = strtoupper(trim((string) $table->area));
+
+            return $area === 'OUTDOOR' ? 'OUTDOOR' : 'INDOOR';
         });
+
+        // Urutkan grup agar INDOOR tampil pertama, diikuti OUTDOOR
+        $sortedGrouped = collect();
+        if ($groupedTables->has('INDOOR')) {
+            $sortedGrouped->put('INDOOR', $groupedTables->get('INDOOR'));
+        }
+        if ($groupedTables->has('OUTDOOR')) {
+            $sortedGrouped->put('OUTDOOR', $groupedTables->get('OUTDOOR'));
+        }
+        $groupedTables = $sortedGrouped->isNotEmpty() ? $sortedGrouped : $groupedTables;
 
         return view('tables.index', compact('tables', 'stats', 'groupedTables'));
     }
@@ -33,11 +46,11 @@ class CafeTableController extends Controller
         $validated = $request->validate([
             'table_number' => ['required', 'string', 'max:50', 'unique:cafe_tables,table_number'],
             'capacity' => ['required', 'integer', 'min:1', 'max:50'],
-            'area' => ['nullable', 'string', 'max:50'],
+            'area' => ['required', 'in:INDOOR,OUTDOOR'],
             'status' => ['required', 'in:available,occupied,reserved'],
         ]);
 
-        $validated['area'] = strtoupper(trim($validated['area'] ?? 'INDOOR'));
+        $validated['area'] = strtoupper(trim($validated['area']));
 
         CafeTable::create($validated);
 
@@ -49,11 +62,11 @@ class CafeTableController extends Controller
         $validated = $request->validate([
             'table_number' => ['required', 'string', 'max:50', 'unique:cafe_tables,table_number,'.$table->id],
             'capacity' => ['required', 'integer', 'min:1', 'max:50'],
-            'area' => ['nullable', 'string', 'max:50'],
+            'area' => ['required', 'in:INDOOR,OUTDOOR'],
             'status' => ['required', 'in:available,occupied,reserved'],
         ]);
 
-        $validated['area'] = strtoupper(trim($validated['area'] ?? 'INDOOR'));
+        $validated['area'] = strtoupper(trim($validated['area']));
 
         $table->update($validated);
 

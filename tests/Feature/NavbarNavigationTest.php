@@ -53,4 +53,28 @@ class NavbarNavigationTest extends TestCase
         $dashboardResponse = $this->actingAs($user)->get(route('dashboard'));
         $dashboardResponse->assertDontSee('Voucher &amp; Promo', false);
     }
+
+    /**
+     * Memastikan kategori area meja hanya INDOOR dan OUTDOOR.
+     */
+    public function test_tables_page_only_supports_indoor_and_outdoor_areas(): void
+    {
+        $user = $this->getAdminUser();
+
+        $response = $this->actingAs($user)->get(route('tables.index'));
+        $response->assertStatus(200);
+        $response->assertSee('INDOOR');
+        $response->assertSee('OUTDOOR');
+        $response->assertDontSee('<option value="VIP">', false);
+        $response->assertDontSee('<option value="BAR">', false);
+
+        // Menambahkan area VIP harus gagal validasi
+        $invalidResponse = $this->actingAs($user)->post(route('tables.store'), [
+            'table_number' => 'Meja Test VIP',
+            'capacity' => 4,
+            'area' => 'VIP',
+            'status' => 'available',
+        ]);
+        $invalidResponse->assertSessionHasErrors('area');
+    }
 }

@@ -85,10 +85,32 @@
     </div>
 
     {{-- ─────────────────────────────────────────────── --}}
-    {{-- 2. TATA LETAK & KARTU MEJA PER KATEGORI AREA    --}}
+    {{-- 2. FILTER & KARTU MEJA PER AREA (INDOOR & OUTDOOR) --}}
     {{-- ─────────────────────────────────────────────── --}}
+    <div class="flex items-center justify-between flex-wrap gap-3 bg-white p-3.5 rounded-2xl border border-[#EADBCE] shadow-xs">
+        <div class="flex items-center gap-2 overflow-x-auto text-xs">
+            <span class="text-[#8A7A75] font-semibold text-xs mr-1 hidden sm:inline">Filter Area:</span>
+            <button type="button" onclick="filterArea('all', this)"
+                    class="area-filter-btn px-4 py-2 rounded-xl font-bold transition-all bg-[#D9A05B] text-white shadow-xs cursor-pointer">
+                Semua Area ({{ $stats['total'] ?? 0 }})
+            </button>
+            <button type="button" onclick="filterArea('INDOOR', this)"
+                    class="area-filter-btn px-4 py-2 rounded-xl font-bold transition-all bg-[#FAF6F0] text-[#3D231D] hover:bg-[#F0E6D8] border border-[#EADBCE] cursor-pointer">
+                <i class="fa-solid fa-couch mr-1 text-[#C88A42]"></i> INDOOR ({{ $groupedTables->has('INDOOR') ? $groupedTables->get('INDOOR')->count() : 0 }})
+            </button>
+            <button type="button" onclick="filterArea('OUTDOOR', this)"
+                    class="area-filter-btn px-4 py-2 rounded-xl font-bold transition-all bg-[#FAF6F0] text-[#3D231D] hover:bg-[#F0E6D8] border border-[#EADBCE] cursor-pointer">
+                <i class="fa-solid fa-tree mr-1 text-emerald-600"></i> OUTDOOR ({{ $groupedTables->has('OUTDOOR') ? $groupedTables->get('OUTDOOR')->count() : 0 }})
+            </button>
+        </div>
+
+        <div class="text-xs text-[#8A7A75] font-medium hidden md:block">
+            Area Meja: <strong class="text-[#3D231D]">INDOOR</strong> &amp; <strong class="text-[#3D231D]">OUTDOOR</strong>
+        </div>
+    </div>
+
     @forelse($groupedTables as $areaName => $areaTables)
-        <div class="bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-6 space-y-5">
+        <div id="area-section-{{ $areaName }}" class="area-group-section bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-6 space-y-5" data-area="{{ $areaName }}">
             {{-- Header Kategori Area --}}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#F5EDE3]">
                 <div class="flex items-center gap-3">
@@ -268,7 +290,7 @@
             @csrf
             <div>
                 <label class="block text-xs font-bold text-[#3D231D] mb-1.5 uppercase tracking-wider">Nomor / Nama Meja *</label>
-                <input type="text" name="table_number" required placeholder="Contoh: Meja 09 atau VIP-1"
+                <input type="text" name="table_number" required placeholder="Contoh: Meja 09 atau Meja 10"
                        class="w-full px-3.5 py-2.5 bg-[#FAF6F0] border border-[#EADBCE] rounded-xl text-xs font-bold text-[#3D231D] focus:ring-2 focus:ring-[#D9A05B] outline-none">
             </div>
 
@@ -281,11 +303,9 @@
 
                 <div>
                     <label class="block text-xs font-bold text-[#3D231D] mb-1.5 uppercase tracking-wider">Kategori Area *</label>
-                    <select name="area" class="w-full px-3.5 py-2.5 bg-[#FAF6F0] border border-[#EADBCE] rounded-xl text-xs font-semibold text-[#3D231D] outline-none">
+                    <select name="area" required class="w-full px-3.5 py-2.5 bg-[#FAF6F0] border border-[#EADBCE] rounded-xl text-xs font-semibold text-[#3D231D] outline-none">
                         <option value="INDOOR">INDOOR</option>
                         <option value="OUTDOOR">OUTDOOR</option>
-                        <option value="VIP">VIP</option>
-                        <option value="BAR">BAR</option>
                     </select>
                 </div>
             </div>
@@ -346,11 +366,9 @@
 
                 <div>
                     <label class="block text-xs font-bold text-[#3D231D] mb-1.5 uppercase tracking-wider">Kategori Area *</label>
-                    <select id="edit-table-area" name="area" class="w-full px-3.5 py-2.5 bg-[#FAF6F0] border border-[#EADBCE] rounded-xl text-xs font-semibold text-[#3D231D] outline-none">
+                    <select id="edit-table-area" name="area" required class="w-full px-3.5 py-2.5 bg-[#FAF6F0] border border-[#EADBCE] rounded-xl text-xs font-semibold text-[#3D231D] outline-none">
                         <option value="INDOOR">INDOOR</option>
                         <option value="OUTDOOR">OUTDOOR</option>
-                        <option value="VIP">VIP</option>
-                        <option value="BAR">BAR</option>
                     </select>
                 </div>
             </div>
@@ -381,6 +399,26 @@
 
 @push('scripts')
 <script>
+    // Fungsi Filter Tampilan Berdasarkan Kategori Area (INDOOR & OUTDOOR)
+    function filterArea(area, btn) {
+        document.querySelectorAll('.area-filter-btn').forEach(b => {
+            b.classList.remove('bg-[#D9A05B]', 'text-white', 'shadow-xs');
+            b.classList.add('bg-[#FAF6F0]', 'text-[#3D231D]', 'border', 'border-[#EADBCE]');
+        });
+        if (btn) {
+            btn.classList.remove('bg-[#FAF6F0]', 'text-[#3D231D]', 'border', 'border-[#EADBCE]');
+            btn.classList.add('bg-[#D9A05B]', 'text-white', 'shadow-xs');
+        }
+
+        document.querySelectorAll('.area-group-section').forEach(sec => {
+            if (area === 'all' || sec.dataset.area === area) {
+                sec.classList.remove('hidden');
+            } else {
+                sec.classList.add('hidden');
+            }
+        });
+    }
+
     // Fungsi Muat Ulang Halaman Meja
     function refreshTablesPage(btn) {
         if (btn) {
@@ -393,12 +431,12 @@
         window.location.reload();
     }
 
-    // Buka Modal Edit Meja
+    // Buka Modal Edit Meja (Hanya INDOOR dan OUTDOOR)
     function openEditTable(id, tableNumber, capacity, area, status) {
         document.getElementById('form-edit-table').action = `/tables/${id}`;
         document.getElementById('edit-table-number').value = tableNumber;
         document.getElementById('edit-table-capacity').value = capacity;
-        document.getElementById('edit-table-area').value = area || 'INDOOR';
+        document.getElementById('edit-table-area').value = (area === 'OUTDOOR') ? 'OUTDOOR' : 'INDOOR';
         document.getElementById('edit-table-status').value = status;
         document.getElementById('modal-edit-table').classList.remove('hidden');
     }
