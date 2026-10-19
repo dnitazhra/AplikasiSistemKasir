@@ -171,46 +171,39 @@
                         <span>Kategori Produk</span>
                     </a>
 
-                    <!-- Denah Meja (DISABLED) -->
-                    <span tabindex="-1"
-                          class="disabled flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm text-[#FAF6F0]/80"
-                          style="opacity:0.45; pointer-events:none; cursor:not-allowed;">
-                        <i class="fa-solid fa-table-cells-large text-base w-5 text-center text-[#D9A05B]"></i>
-                        <span>Denah Meja</span>
-                        <span class="ml-auto text-[10px] bg-[#4A2E2B] text-[#D9A05B]/60 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Soon</span>
-                    </span>
+                    <!-- Denah & Status Meja (AKTIF) -->
+                    <a href="{{ route('tables.index') }}"
+                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('tables.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                        <i class="fa-solid fa-table-cells-large text-base w-5 text-center {{ request()->routeIs('tables.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                        <span>Denah &amp; Status Meja</span>
+                    </a>
 
-                    <!-- Kelola Karyawan (DISABLED) -->
-                    <span tabindex="-1"
-                          class="disabled flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm text-[#FAF6F0]/80"
-                          style="opacity:0.45; pointer-events:none; cursor:not-allowed;">
-                        <i class="fa-solid fa-users text-base w-5 text-center text-[#D9A05B]"></i>
+                    <!-- Kelola Karyawan (AKTIF) -->
+                    <a href="{{ route('users.index') }}"
+                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('users.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                        <i class="fa-solid fa-users text-base w-5 text-center {{ request()->routeIs('users.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                         <span>Kelola Karyawan</span>
-                        <span class="ml-auto text-[10px] bg-[#4A2E2B] text-[#D9A05B]/60 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Soon</span>
-                    </span>
+                    </a>
+
                 </div>
 
                 <!-- ─── KATEGORI: LAPORAN & SISTEM ─── -->
                 <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Laporan &amp; Sistem</p>
                 <div class="space-y-1 mb-2">
 
-                    <!-- Laporan Penjualan (DISABLED) -->
-                    <span tabindex="-1"
-                          class="disabled flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm text-[#FAF6F0]/80"
-                          style="opacity:0.45; pointer-events:none; cursor:not-allowed;">
-                        <i class="fa-solid fa-chart-line text-base w-5 text-center text-[#D9A05B]"></i>
+                    <!-- Laporan Penjualan (AKTIF) -->
+                    <a href="{{ route('reports.index') }}"
+                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                        <i class="fa-solid fa-chart-line text-base w-5 text-center {{ request()->routeIs('reports.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                         <span>Laporan Penjualan</span>
-                        <span class="ml-auto text-[10px] bg-[#4A2E2B] text-[#D9A05B]/60 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Soon</span>
-                    </span>
+                    </a>
 
-                    <!-- Pengaturan Kafe (DISABLED) -->
-                    <span tabindex="-1"
-                          class="disabled flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm text-[#FAF6F0]/80"
-                          style="opacity:0.45; pointer-events:none; cursor:not-allowed;">
-                        <i class="fa-solid fa-gear text-base w-5 text-center text-[#D9A05B]"></i>
+                    <!-- Pengaturan Kafe (AKTIF) -->
+                    <a href="{{ route('settings.index') }}"
+                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('settings.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                        <i class="fa-solid fa-gear text-base w-5 text-center {{ request()->routeIs('settings.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                         <span>Pengaturan Kafe</span>
-                        <span class="ml-auto text-[10px] bg-[#4A2E2B] text-[#D9A05B]/60 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Soon</span>
-                    </span>
+                    </a>
                 </div>
 
             </nav>
@@ -221,12 +214,12 @@
             <div class="flex items-center justify-between mb-3 px-2">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-xl bg-[#D9A05B]/20 border border-[#D9A05B]/40 flex items-center justify-center text-[#D9A05B] font-bold text-sm">
-                        A
+                        {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                     </div>
                     <div>
-                        <p class="text-sm font-semibold text-white leading-tight truncate w-32">Admin d'nale</p>
+                        <p class="text-sm font-semibold text-white leading-tight truncate w-32">{{ auth()->user()->name ?? 'Admin d\'nale' }}</p>
                         <span class="inline-block text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full mt-0.5 bg-amber-500/20 text-amber-300">
-                            Admin
+                            {{ auth()->user()->role ?? 'Admin' }}
                         </span>
                     </div>
                 </div>

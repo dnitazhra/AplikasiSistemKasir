@@ -13,7 +13,19 @@ class CafeTableController extends Controller
     public function index(): View
     {
         $tables = CafeTable::with(['currentOrder.user'])->orderBy('table_number')->get();
-        return view('tables.index', compact('tables'));
+
+        $stats = [
+            'total' => $tables->count(),
+            'available' => $tables->where('status', 'available')->count(),
+            'occupied' => $tables->where('status', 'occupied')->count(),
+            'reserved' => $tables->where('status', 'reserved')->count(),
+        ];
+
+        $groupedTables = $tables->groupBy(function ($table) {
+            return strtoupper(trim($table->area ?: 'INDOOR'));
+        });
+
+        return view('tables.index', compact('tables', 'stats', 'groupedTables'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -21,8 +33,11 @@ class CafeTableController extends Controller
         $validated = $request->validate([
             'table_number' => ['required', 'string', 'max:50', 'unique:cafe_tables,table_number'],
             'capacity' => ['required', 'integer', 'min:1', 'max:50'],
+            'area' => ['nullable', 'string', 'max:50'],
             'status' => ['required', 'in:available,occupied,reserved'],
         ]);
+
+        $validated['area'] = strtoupper(trim($validated['area'] ?? 'INDOOR'));
 
         CafeTable::create($validated);
 
@@ -32,10 +47,13 @@ class CafeTableController extends Controller
     public function update(Request $request, CafeTable $table): RedirectResponse
     {
         $validated = $request->validate([
-            'table_number' => ['required', 'string', 'max:50', 'unique:cafe_tables,table_number,' . $table->id],
+            'table_number' => ['required', 'string', 'max:50', 'unique:cafe_tables,table_number,'.$table->id],
             'capacity' => ['required', 'integer', 'min:1', 'max:50'],
+            'area' => ['nullable', 'string', 'max:50'],
             'status' => ['required', 'in:available,occupied,reserved'],
         ]);
+
+        $validated['area'] = strtoupper(trim($validated['area'] ?? 'INDOOR'));
 
         $table->update($validated);
 
@@ -45,6 +63,7 @@ class CafeTableController extends Controller
     public function destroy(CafeTable $table): RedirectResponse
     {
         $table->delete();
+
         return redirect()->route('tables.index')->with('success', 'Meja berhasil dihapus!');
     }
 
