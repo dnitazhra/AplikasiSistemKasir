@@ -2,14 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
 use App\Models\CafeTable;
+use App\Models\Category;
 use App\Models\Menu;
 use App\Models\MenuVariant;
 use App\Models\MenuVariantOption;
 use App\Models\Order;
 use App\Models\OrderDetail;
-use App\Models\OrderDetailVariant;
 use App\Models\Setting;
 use App\Models\User;
 use App\Models\Voucher;
@@ -111,19 +110,20 @@ class DatabaseSeeder extends Seeder
             Voucher::firstOrCreate(['code' => $v['code']], $v);
         }
 
-        // 5. Categories
-        $catSignature = Category::firstOrCreate(['slug' => 'signature-coffee'], ['name' => 'Signature Coffee']);
-        $catClassic = Category::firstOrCreate(['slug' => 'espresso-classic'], ['name' => 'Espresso & Classic']);
-        $catNonCoffee = Category::firstOrCreate(['slug' => 'non-coffee-tea'], ['name' => 'Non-Coffee & Tea']);
-        $catPastry = Category::firstOrCreate(['slug' => 'pastry-bakery'], ['name' => 'Pastry & Bakery']);
-        $catFood = Category::firstOrCreate(['slug' => 'main-course-snacks'], ['name' => 'Main Course & Snacks']);
+        // 5. Categories (5 kategori utama)
+        $catCoffee = Category::firstOrCreate(['slug' => 'coffee'], ['name' => 'Coffee']);
+        $catNonCoffee = Category::firstOrCreate(['slug' => 'non-coffee'], ['name' => 'Non Coffee']);
+        $catSnacks = Category::firstOrCreate(['slug' => 'snacks'], ['name' => 'Snacks']);
+        $catDessert = Category::firstOrCreate(['slug' => 'dessert'], ['name' => 'Dessert']);
+        $catMainCourse = Category::firstOrCreate(['slug' => 'main-course'], ['name' => 'Main Course']);
 
         // 6. Menus and Variants
+        // ─── COFFEE ───
         // Menu 1: d'nale Aren Latte
         $menu1 = Menu::firstOrCreate(
             ['name' => 'd\'nale Aren Latte'],
             [
-                'category_id' => $catSignature->id,
+                'category_id' => $catCoffee->id,
                 'description' => 'Espresso arabika premium dengan susu segar dan gula aren organik khas d\'nale.',
                 'price' => 28000.00,
                 'image' => null,
@@ -143,7 +143,7 @@ class DatabaseSeeder extends Seeder
         $menu2 = Menu::firstOrCreate(
             ['name' => 'Caramel Macchiato'],
             [
-                'category_id' => $catSignature->id,
+                'category_id' => $catCoffee->id,
                 'description' => 'Espresso dipadu sirup vanila, susu berbuih, dan saus karamel mewah.',
                 'price' => 34000.00,
                 'image' => null,
@@ -158,7 +158,7 @@ class DatabaseSeeder extends Seeder
         $menu3 = Menu::firstOrCreate(
             ['name' => 'Americano Double Shot'],
             [
-                'category_id' => $catClassic->id,
+                'category_id' => $catCoffee->id,
                 'description' => 'Dua shot espresso murni dengan air dingin atau panas, aroma bold dan segar.',
                 'price' => 22000.00,
                 'image' => null,
@@ -173,7 +173,7 @@ class DatabaseSeeder extends Seeder
         $menu4 = Menu::firstOrCreate(
             ['name' => 'Spanish Latte'],
             [
-                'category_id' => $catClassic->id,
+                'category_id' => $catCoffee->id,
                 'description' => 'Perpaduan lembut espresso dengan susu kental manis dan susu segar.',
                 'price' => 30000.00,
                 'image' => null,
@@ -181,6 +181,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // ─── NON COFFEE ───
         // Menu 5: Matcha Kyoto Latte
         $menu5 = Menu::firstOrCreate(
             ['name' => 'Matcha Kyoto Latte'],
@@ -205,11 +206,12 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // ─── SNACKS ───
         // Menu 7: Almond Croissant
         $menu7 = Menu::firstOrCreate(
             ['name' => 'Almond Croissant'],
             [
-                'category_id' => $catPastry->id,
+                'category_id' => $catSnacks->id,
                 'description' => 'Croissant renyah berlapis dengan isian krim almond dan taburan kacang almond panggang.',
                 'price' => 28000.00,
                 'image' => null,
@@ -221,7 +223,7 @@ class DatabaseSeeder extends Seeder
         $menu8 = Menu::firstOrCreate(
             ['name' => 'Cinnamon Glazed Roll'],
             [
-                'category_id' => $catPastry->id,
+                'category_id' => $catSnacks->id,
                 'description' => 'Roti gulung kayu manis harum dengan glaze cream cheese lembut.',
                 'price' => 25000.00,
                 'image' => null,
@@ -233,7 +235,7 @@ class DatabaseSeeder extends Seeder
         $menu9 = Menu::firstOrCreate(
             ['name' => 'Truffle Parmesan Fries'],
             [
-                'category_id' => $catFood->id,
+                'category_id' => $catSnacks->id,
                 'description' => 'Kentang goreng renyah dengan minyak truffle aromatik dan taburan keju parmesan.',
                 'price' => 29000.00,
                 'image' => null,
@@ -241,11 +243,37 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Menu 10: Nasi Goreng Spesial d'nale (Out of stock / habis to demo alert widget)
+        // ─── DESSERT ───
+        // Menu 10: Tiramisu d'nale
         $menu10 = Menu::firstOrCreate(
+            ['name' => 'Tiramisu d\'nale'],
+            [
+                'category_id' => $catDessert->id,
+                'description' => 'Tiramisu klasik dengan lapisan mascarpone lembut dan espresso premium d\'nale.',
+                'price' => 35000.00,
+                'image' => null,
+                'is_available' => true,
+            ]
+        );
+
+        // Menu 11: Chocolate Lava Cake
+        $menu11 = Menu::firstOrCreate(
+            ['name' => 'Chocolate Lava Cake'],
+            [
+                'category_id' => $catDessert->id,
+                'description' => 'Kue cokelat hangat dengan lelehan cokelat lumer di tengah, disajikan dengan es krim vanila.',
+                'price' => 36000.00,
+                'image' => null,
+                'is_available' => true,
+            ]
+        );
+
+        // ─── MAIN COURSE ───
+        // Menu 12: Nasi Goreng Spesial d'nale (Out of stock / habis to demo alert widget)
+        $menu12 = Menu::firstOrCreate(
             ['name' => 'Nasi Goreng Spesial d\'nale'],
             [
-                'category_id' => $catFood->id,
+                'category_id' => $catMainCourse->id,
                 'description' => 'Nasi goreng racikan chef dengan potongan ayam, telur mata sapi, sate ayam dan kerupuk.',
                 'price' => 38000.00,
                 'image' => null,
@@ -253,11 +281,11 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Menu 11: Smoked Beef Spaghetti Carbonara (Out of stock)
-        $menu11 = Menu::firstOrCreate(
+        // Menu 13: Smoked Beef Carbonara (Out of stock)
+        $menu13 = Menu::firstOrCreate(
             ['name' => 'Smoked Beef Carbonara'],
             [
-                'category_id' => $catFood->id,
+                'category_id' => $catMainCourse->id,
                 'description' => 'Spaghetti al dente dengan saus carbonara creamy dan irisan smoked beef gurih.',
                 'price' => 42000.00,
                 'image' => null,
