@@ -23,9 +23,9 @@ class AuthController extends Controller
     {
         try {
             // Jalankan migrasi fresh jika tabel orders atau kolom payment_status belum ada
-            if (!Schema::hasTable('orders') || !Schema::hasColumn('orders', 'payment_status')) {
+            if (! Schema::hasTable('orders') || ! Schema::hasColumn('orders', 'payment_status')) {
                 Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
-            } elseif (!Schema::hasTable('users') || !Schema::hasColumn('users', 'username')) {
+            } elseif (! Schema::hasTable('users') || ! Schema::hasColumn('users', 'username')) {
                 Artisan::call('migrate', ['--force' => true]);
             }
 
@@ -69,7 +69,7 @@ class AuthController extends Controller
 
             // Jalankan seeder jika katalog menu / meja masih kosong
             if (Category::count() === 0 || CafeTable::count() === 0) {
-                (new DatabaseSeeder())->run();
+                (new DatabaseSeeder)->run();
             }
         } catch (\Throwable $e) {
             report($e);
@@ -112,11 +112,11 @@ class AuthController extends Controller
             /** @var User $user */
             $user = Auth::user();
 
-            if ($user->role === 'barista') {
-                return redirect()->intended(route('kitchen.index'));
-            }
-
-            return redirect()->intended(route('dashboard'));
+            return match ($user->role) {
+                'cashier' => redirect()->intended(route('pos.index')),
+                'barista' => redirect()->intended(route('kitchen.index')),
+                default => redirect()->intended(route('dashboard')),
+            };
         }
 
         return back()->withErrors([

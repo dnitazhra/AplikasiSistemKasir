@@ -100,7 +100,7 @@
         <div class="flex flex-col flex-1 min-h-0">
             <!-- BRAND LOGO HEADER (FIXED TOP) -->
             <div class="p-6 border-b border-[#4A2E2B] flex items-center justify-between flex-shrink-0">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3.5 group">
+                <a href="{{ match(auth()->user()?->role) { 'cashier' => route('pos.index'), 'barista' => route('kitchen.index'), default => route('dashboard') } }}" class="flex items-center gap-3.5 group">
                     <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#C88A42] to-[#D9A05B] flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform duration-200">
                         <i class="fa-solid fa-mug-hot text-xl"></i>
                     </div>
@@ -121,90 +121,100 @@
             <!-- NAVIGATION MENU (INDEPENDENT INTERNAL SCROLL) -->
             <nav id="nav-menu" class="p-4 flex-1 overflow-y-auto hidden md:block">
 
-                <!-- ─── KATEGORI: MENU UTAMA ─── -->
-                <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Menu Utama</p>
-                <div class="space-y-1 mb-4">
+                @php $userRole = auth()->user()?->role; @endphp
 
-                    <!-- Dashboard (AKTIF) -->
-                    <a href="{{ route('dashboard') }}" 
-                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                        <i class="fa-solid fa-chart-pie text-base w-5 text-center {{ request()->routeIs('dashboard') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </div>
+                {{-- ─── KASIR: Hanya tampil untuk kasir ─── --}}
+                @if($userRole === 'cashier')
+                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Kasir</p>
+                    <div class="space-y-1 mb-4">
+                        <a href="{{ route('pos.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('pos.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-cash-register text-base w-5 text-center {{ request()->routeIs('pos.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Terminal Kasir</span>
+                        </a>
+                    </div>
+                @endif
 
-                <!-- ─── KATEGORI: OPERASIONAL ─── -->
-                <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Operasional</p>
-                <div class="space-y-1 mb-4">
+                {{-- ─── BARISTA: Hanya tampil untuk barista ─── --}}
+                @if($userRole === 'barista')
+                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Dapur & Bar</p>
+                    <div class="space-y-1 mb-4">
+                        <a href="{{ route('kitchen.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-blender text-base w-5 text-center {{ request()->routeIs('kitchen.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Antrian Pesanan</span>
+                        </a>
+                    </div>
+                @endif
 
-                    <!-- Bill Aktif (AKTIF) -->
-                    <a href="{{ route('bills.index') }}"
-                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('bills.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                        <i class="fa-solid fa-file-invoice text-base w-5 text-center {{ request()->routeIs('bills.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                        <span>Bill Aktif</span>
-                    </a>
+                {{-- ─── ADMIN: Menu lengkap hanya untuk admin ─── --}}
+                @if($userRole === 'admin')
+                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Menu Utama</p>
+                    <div class="space-y-1 mb-4">
+                        <a href="{{ route('dashboard') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-chart-pie text-base w-5 text-center {{ request()->routeIs('dashboard') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </div>
 
-                    <!-- Dapur & Bar (AKTIF) -->
-                    <a href="{{ route('kitchen.index') }}"
-                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                        <i class="fa-solid fa-blender text-base w-5 text-center {{ request()->routeIs('kitchen.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                        <span>Dapur &amp; Bar</span>
-                    </a>
+                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Operasional</p>
+                    <div class="space-y-1 mb-4">
+                        <a href="{{ route('pos.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('pos.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-cash-register text-base w-5 text-center {{ request()->routeIs('pos.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Terminal Kasir</span>
+                        </a>
+                        <a href="{{ route('bills.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('bills.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-file-invoice text-base w-5 text-center {{ request()->routeIs('bills.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Bill Aktif</span>
+                        </a>
+                        <a href="{{ route('kitchen.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-blender text-base w-5 text-center {{ request()->routeIs('kitchen.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Dapur &amp; Bar</span>
+                        </a>
+                        <a href="{{ route('menus.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('menus.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-book-open text-base w-5 text-center {{ request()->routeIs('menus.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Daftar Menu</span>
+                        </a>
+                    </div>
 
-                    <!-- Daftar Menu (AKTIF) -->
-                    <a href="{{ route('menus.index') }}"
-                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('menus.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                        <i class="fa-solid fa-book-open text-base w-5 text-center {{ request()->routeIs('menus.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                        <span>Daftar Menu</span>
-                    </a>
+                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Manajemen Data</p>
+                    <div class="space-y-1 mb-4">
+                        <a href="{{ route('categories.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('categories.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-tags text-base w-5 text-center {{ request()->routeIs('categories.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Kategori Produk</span>
+                        </a>
+                        <a href="{{ route('tables.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('tables.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-table-cells-large text-base w-5 text-center {{ request()->routeIs('tables.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Denah &amp; Status Meja</span>
+                        </a>
+                        <a href="{{ route('users.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('users.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-users text-base w-5 text-center {{ request()->routeIs('users.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Kelola Karyawan</span>
+                        </a>
+                    </div>
 
-                </div>
-
-                <!-- ─── KATEGORI: MANAJEMEN DATA ─── -->
-                <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Manajemen Data</p>
-                <div class="space-y-1 mb-4">
-
-                    <!-- Kategori Produk (AKTIF) -->
-                    <a href="{{ route('categories.index') }}"
-                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('categories.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                        <i class="fa-solid fa-tags text-base w-5 text-center {{ request()->routeIs('categories.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                        <span>Kategori Produk</span>
-                    </a>
-
-                    <!-- Denah & Status Meja (AKTIF) -->
-                    <a href="{{ route('tables.index') }}"
-                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('tables.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                        <i class="fa-solid fa-table-cells-large text-base w-5 text-center {{ request()->routeIs('tables.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                        <span>Denah &amp; Status Meja</span>
-                    </a>
-
-                    <!-- Kelola Karyawan (AKTIF) -->
-                    <a href="{{ route('users.index') }}"
-                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('users.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                        <i class="fa-solid fa-users text-base w-5 text-center {{ request()->routeIs('users.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                        <span>Kelola Karyawan</span>
-                    </a>
-
-                </div>
-
-                <!-- ─── KATEGORI: LAPORAN & SISTEM ─── -->
-                <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Laporan &amp; Sistem</p>
-                <div class="space-y-1 mb-2">
-
-                    <!-- Laporan Penjualan (AKTIF) -->
-                    <a href="{{ route('reports.index') }}"
-                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                        <i class="fa-solid fa-chart-line text-base w-5 text-center {{ request()->routeIs('reports.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                        <span>Laporan Penjualan</span>
-                    </a>
-
-                    <!-- Pengaturan Kafe (AKTIF) -->
-                    <a href="{{ route('settings.index') }}"
-                       class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('settings.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                        <i class="fa-solid fa-gear text-base w-5 text-center {{ request()->routeIs('settings.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                        <span>Pengaturan Kafe</span>
-                    </a>
-                </div>
+                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Laporan &amp; Sistem</p>
+                    <div class="space-y-1 mb-2">
+                        <a href="{{ route('reports.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-chart-line text-base w-5 text-center {{ request()->routeIs('reports.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Laporan Penjualan</span>
+                        </a>
+                        <a href="{{ route('settings.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('settings.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-gear text-base w-5 text-center {{ request()->routeIs('settings.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Pengaturan Kafe</span>
+                        </a>
+                    </div>
+                @endif
 
             </nav>
         </div>
@@ -278,11 +288,13 @@
                             <span id="realtime-clock">{{ now()->translatedFormat('l, d M Y') }} • {{ now()->format('H:i') }} WIB</span>
                         </div>
 
-                        <!-- Quick POS Shortcut -->
-                        <a href="{{ route('pos.index') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#D9A05B] to-[#C88A42] hover:brightness-105 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200">
-                            <i class="fa-solid fa-plus-circle"></i>
-                            <span>Order Baru</span>
-                        </a>
+                        <!-- Quick POS Shortcut (hanya admin) -->
+                        @if(auth()->user()?->role === 'admin')
+                            <a href="{{ route('pos.index') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#D9A05B] to-[#C88A42] hover:brightness-105 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200">
+                                <i class="fa-solid fa-plus-circle"></i>
+                                <span>Order Baru</span>
+                            </a>
+                        @endif
                     @endif
                 @endif
             </div>
