@@ -54,12 +54,26 @@
         <!-- FILTER KATEGORI PILL (SHRINK-0) -->
         <div class="py-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-[#EADBCE] shrink-0">
             <button type="button" onclick="filterCategory('all', this)"
-                    class="cat-pill active px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all bg-[#D9A05B] text-white shadow-xs">
-                Semua Menu ({{ $menus->count() }})
+                    class="cat-pill active flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all bg-[#D9A05B] text-white shadow-xs">
+                <i class="fa-solid fa-border-all text-[10px]"></i>
+                Semua ({{ $menus->count() }})
             </button>
             @foreach($categories as $cat)
+                @php
+                    $catIcons = [
+                        'coffee'      => 'fa-mug-hot',
+                        'non coffee'  => 'fa-glass-water',
+                        'non-coffee'  => 'fa-glass-water',
+                        'snacks'      => 'fa-cookie-bite',
+                        'dessert'     => 'fa-cake-candles',
+                        'main course' => 'fa-bowl-food',
+                        'main-course' => 'fa-bowl-food',
+                    ];
+                    $icon = $catIcons[strtolower($cat->name)] ?? $catIcons[$cat->slug] ?? 'fa-tag';
+                @endphp
                 <button type="button" onclick="filterCategory('{{ $cat->id }}', this)"
-                        class="cat-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-[#FAF6F0] text-[#3D231D] hover:bg-[#EADBCE]">
+                        class="cat-pill flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-[#FAF6F0] text-[#3D231D] hover:bg-[#EADBCE]">
+                    <i class="fa-solid {{ $icon }} text-[10px] text-[#C88A42]"></i>
                     {{ $cat->name }} ({{ $cat->menus_count }})
                 </button>
             @endforeach

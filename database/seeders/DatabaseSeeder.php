@@ -110,11 +110,11 @@ class DatabaseSeeder extends Seeder
             Voucher::firstOrCreate(['code' => $v['code']], $v);
         }
 
-        // 5. Categories (5 kategori utama)
-        $catCoffee = Category::firstOrCreate(['slug' => 'coffee'], ['name' => 'Coffee']);
-        $catNonCoffee = Category::firstOrCreate(['slug' => 'non-coffee'], ['name' => 'Non Coffee']);
-        $catSnacks = Category::firstOrCreate(['slug' => 'snacks'], ['name' => 'Snacks']);
-        $catDessert = Category::firstOrCreate(['slug' => 'dessert'], ['name' => 'Dessert']);
+        // 5. Categories (5 Kategori)
+        $catCoffee     = Category::firstOrCreate(['slug' => 'coffee'],      ['name' => 'Coffee']);
+        $catNonCoffee  = Category::firstOrCreate(['slug' => 'non-coffee'],  ['name' => 'Non Coffee']);
+        $catSnacks     = Category::firstOrCreate(['slug' => 'snacks'],      ['name' => 'Snacks']);
+        $catDessert    = Category::firstOrCreate(['slug' => 'dessert'],     ['name' => 'Dessert']);
         $catMainCourse = Category::firstOrCreate(['slug' => 'main-course'], ['name' => 'Main Course']);
 
         // 6. Menus and Variants
@@ -206,12 +206,12 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // ─── SNACKS ───
-        // Menu 7: Almond Croissant
+        // ─── DESSERT & SNACKS ───
+        // Menu 7: Almond Croissant (Dessert)
         $menu7 = Menu::firstOrCreate(
             ['name' => 'Almond Croissant'],
             [
-                'category_id' => $catSnacks->id,
+                'category_id' => $catDessert->id,
                 'description' => 'Croissant renyah berlapis dengan isian krim almond dan taburan kacang almond panggang.',
                 'price' => 28000.00,
                 'image' => null,
@@ -219,11 +219,11 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Menu 8: Cinnamon Glazed Roll
+        // Menu 8: Cinnamon Glazed Roll (Dessert)
         $menu8 = Menu::firstOrCreate(
             ['name' => 'Cinnamon Glazed Roll'],
             [
-                'category_id' => $catSnacks->id,
+                'category_id' => $catDessert->id,
                 'description' => 'Roti gulung kayu manis harum dengan glaze cream cheese lembut.',
                 'price' => 25000.00,
                 'image' => null,
@@ -231,7 +231,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Menu 9: Truffle Parmesan Fries
+        // Menu 9: Truffle Parmesan Fries (Snacks)
         $menu9 = Menu::firstOrCreate(
             ['name' => 'Truffle Parmesan Fries'],
             [
@@ -243,8 +243,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // ─── DESSERT ───
-        // Menu 10: Tiramisu d'nale
+        // Menu 10: Tiramisu d'nale (Dessert)
         $menu10 = Menu::firstOrCreate(
             ['name' => 'Tiramisu d\'nale'],
             [
@@ -256,7 +255,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Menu 11: Chocolate Lava Cake
+        // Menu 11: Chocolate Lava Cake (Dessert)
         $menu11 = Menu::firstOrCreate(
             ['name' => 'Chocolate Lava Cake'],
             [
@@ -269,7 +268,7 @@ class DatabaseSeeder extends Seeder
         );
 
         // ─── MAIN COURSE ───
-        // Menu 12: Nasi Goreng Spesial d'nale (Out of stock / habis to demo alert widget)
+        // Menu 12: Nasi Goreng Spesial d'nale
         $menu12 = Menu::firstOrCreate(
             ['name' => 'Nasi Goreng Spesial d\'nale'],
             [
@@ -281,7 +280,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Menu 13: Smoked Beef Carbonara (Out of stock)
+        // Menu 13: Smoked Beef Carbonara
         $menu13 = Menu::firstOrCreate(
             ['name' => 'Smoked Beef Carbonara'],
             [

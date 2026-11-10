@@ -128,19 +128,16 @@
                         <td class="px-6 py-4 hidden sm:table-cell">
                             @php
                                 $descriptions = [
-                                    'coffee'        => 'Aneka racikan kopi espresso based dan manual brew',
-                                    'espresso'      => 'Aneka racikan kopi espresso based dan manual brew',
-                                    'dessert'       => 'Hidangan penutup manis',
-                                    'makanan berat' => 'Menu hidangan utama mengenyangkan',
-                                    'makanan'       => 'Menu hidangan utama mengenyangkan',
-                                    'non coffee'    => 'Minuman segar tanpa kafein',
-                                    'non-coffee'    => 'Minuman segar tanpa kafein',
-                                    'snacks'        => 'Camilan ringan dan kudapan gurih',
-                                    'pastry'        => 'Kue dan roti artisan segar',
-                                    'minuman'       => 'Aneka pilihan minuman segar',
+                                    'coffee'      => 'Aneka racikan kopi espresso based dan manual brew',
+                                    'non coffee'  => 'Minuman segar non-kafein: matcha, cokelat, teh, dan lainnya',
+                                    'non-coffee'  => 'Minuman segar non-kafein: matcha, cokelat, teh, dan lainnya',
+                                    'snacks'      => 'Camilan ringan dan kudapan gurih',
+                                    'dessert'     => 'Hidangan penutup manis: pastry, kue, dan roti artisan',
+                                    'main course' => 'Menu hidangan utama yang mengenyangkan',
+                                    'main-course' => 'Menu hidangan utama yang mengenyangkan',
                                 ];
                                 $key  = strtolower($category->name);
-                                $desc = $descriptions[$key] ?? 'Produk dalam kategori ' . $category->name;
+                                $desc = $descriptions[$key] ?? $descriptions[$category->slug] ?? 'Produk dalam kategori ' . $category->name;
                             @endphp
                             <p class="text-sm text-[#8A7A75]">{{ $desc }}</p>
                         </td>
