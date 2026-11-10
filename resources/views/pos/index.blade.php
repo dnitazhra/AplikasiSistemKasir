@@ -4,59 +4,58 @@
 @section('page_title', 'Terminal Kasir (POS)')
 @section('page_subtitle', 'Pencatatan Pesanan & Pembayaran Cepat')
 
+@section('header_actions')
+    <!-- Live Clock & Tombol Muat Ulang Bersih -->
+    <div class="flex items-center gap-2.5">
+        <div class="hidden sm:flex items-center gap-2 bg-[#FAF6F0] border border-[#EADBCE] px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#3D231D]">
+            <i class="fa-regular fa-clock text-[#C88A42]"></i>
+            <span id="realtime-clock">{{ now()->translatedFormat('l, d M Y') }} • {{ now()->format('H:i') }} WIB</span>
+        </div>
+
+        <button type="button" onclick="window.location.reload()" 
+                class="inline-flex items-center gap-2 bg-[#FAF6F0] hover:bg-white border border-[#EADBCE] hover:border-[#D9A05B] text-[#3D231D] px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-xs hover:shadow-sm transition-all duration-200 cursor-pointer active:scale-95 group"
+                title="Muat Ulang Halaman POS">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-[#C88A42] transition-transform duration-500 group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+                <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+                <path d="M16 16h5v5"/>
+            </svg>
+            <span>Muat Ulang</span>
+        </button>
+    </div>
+@endsection
+
 @section('content')
-<div class="h-[calc(100vh-140px)] flex flex-col lg:flex-row gap-5">
+<div class="h-full flex-1 flex flex-col lg:flex-row gap-4 lg:gap-5 min-h-0 lg:overflow-hidden">
 
-    <!-- LEFT SECTION: MENU CATALOG & FILTERS (FLEX-1) -->
-    <div class="flex-1 flex flex-col bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-5 overflow-hidden">
+    <!-- KOLOM 2: KATALOG MENU (PENCARIAN, FILTER KATEGORI, GRID KARTU PRODUK) -->
+    <div class="flex-1 min-w-0 h-full flex flex-col bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-4 sm:p-5 overflow-hidden">
         
-        <!-- TOP CONTROLS: ORDER TYPE, TABLE SELECTOR, LIVE SEARCH -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-4 border-b border-[#EADBCE]">
-            
-            <!-- Order Type Switcher -->
-            <div class="inline-flex p-1 bg-[#FAF6F0] rounded-xl border border-[#EADBCE]">
-                <button type="button" id="btn-type-dine-in" onclick="setOrderType('dine_in')"
-                        class="px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 bg-[#3D231D] text-white shadow-xs">
-                    <i class="fa-solid fa-utensils"></i>
-                    <span>Dine In</span>
-                </button>
-                <button type="button" id="btn-type-take-away" onclick="setOrderType('take_away')"
-                        class="px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 text-[#8A7A75] hover:text-[#3D231D]">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span>Take Away</span>
-                </button>
-            </div>
-
-            <!-- Table Selector (Visible if Dine In) -->
-            <div id="table-select-wrapper" class="flex items-center gap-2">
-                <span class="text-xs font-semibold text-[#8A7A75] whitespace-nowrap"><i class="fa-solid fa-chair text-[#C88A42] mr-1"></i>Pilih Meja:</span>
-                <select id="select-table" class="bg-[#FAF6F0] border border-[#EADBCE] rounded-xl px-3 py-2 text-xs font-bold text-[#3D231D] focus:ring-2 focus:ring-[#D9A05B] outline-none">
-                    <option value="">-- Pilih Nomor Meja --</option>
-                    @foreach($tables as $table)
-                        <option value="{{ $table->id }}" 
-                                data-status="{{ $table->status }}" 
-                                {{ request('table') == $table->id ? 'selected' : '' }}
-                                {{ $table->status !== 'available' ? 'class=text-rose-600' : '' }}>
-                            {{ $table->table_number }} (Kapasitas: {{ $table->capacity }}) - {{ $table->status === 'available' ? 'Tersedia' : ($table->status === 'occupied' ? 'Terisi' : 'Dipesan') }}
-                        </option>
-                    @endforeach
-                </select>
+        <!-- PENCARIAN & HEADER KATALOG (SHRINK-0) -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3.5 border-b border-[#EADBCE] shrink-0">
+            <div>
+                <h3 class="text-sm font-bold text-[#3D231D] flex items-center gap-2">
+                    <i class="fa-solid fa-mug-hot text-[#C88A42]"></i>
+                    <span>Katalog Menu &amp; Produk</span>
+                </h3>
+                <p class="text-[11px] text-[#8A7A75]">Pilih menu untuk ditambahkan ke keranjang pesanan</p>
             </div>
 
             <!-- Live Search Input -->
-            <div class="relative w-full sm:w-64">
+            <div class="relative w-full sm:w-72">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-[#8A7A75]"></i>
                 <input type="text" id="pos-search" oninput="filterMenus()"
-                       placeholder="Cari kopi, pastry, makanan..." 
-                       class="w-full pl-9 pr-3.5 py-2 bg-[#FAF6F0] border border-[#EADBCE] rounded-xl text-xs text-[#3D231D] focus:ring-2 focus:ring-[#D9A05B] outline-none">
+                       placeholder="Cari kopi, pastry, snack..." 
+                       class="w-full pl-9 pr-3.5 py-2 bg-[#FAF6F0] border border-[#EADBCE] rounded-xl text-xs text-[#3D231D] focus:ring-2 focus:ring-[#D9A05B] outline-none transition-all placeholder:text-[#8A7A75]/70">
             </div>
         </div>
 
-        <!-- CATEGORIES FILTER TABS -->
-        <div class="py-3 flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-[#EADBCE]">
+        <!-- FILTER KATEGORI PILL (SHRINK-0) -->
+        <div class="py-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-[#EADBCE] shrink-0">
             <button type="button" onclick="filterCategory('all', this)"
                     class="cat-pill active px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all bg-[#D9A05B] text-white shadow-xs">
-                Semua Kategori ({{ $menus->count() }})
+                Semua Menu ({{ $menus->count() }})
             </button>
             @foreach($categories as $cat)
                 <button type="button" onclick="filterCategory('{{ $cat->id }}', this)"
@@ -66,52 +65,59 @@
             @endforeach
         </div>
 
-        <!-- MENU ITEMS GRID (SCROLLABLE) -->
-        <div class="flex-1 overflow-y-auto pt-4 pr-1">
-            <div id="menus-container" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3.5">
+        <!-- GRID KARTU PRODUK DENGAN TOMBOL (+) (INTERNAL SCROLL, INDEPENDENT) -->
+        <div class="flex-1 min-h-0 overflow-y-auto pt-3.5 pr-1.5">
+            <div id="menus-container" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3.5">
                 @foreach($menus as $menu)
-                    <div class="menu-card bg-[#FAF6F0]/60 hover:bg-white border border-[#EADBCE] hover:border-[#D9A05B] rounded-2xl p-3.5 flex flex-col justify-between transition-all duration-200 hover:shadow-md cursor-pointer group"
+                    <div class="menu-card bg-white hover:bg-[#FAF6F0]/40 border border-[#EADBCE] hover:border-[#D9A05B] rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between transition-all duration-200 hover:shadow-md cursor-pointer group h-full"
                          data-category="{{ $menu->category_id }}"
                          data-name="{{ strtolower($menu->name) }}"
                          onclick="openMenuModal({{ $menu->id }})">
                         
-                        <div>
-                            <!-- Header Item & Badge -->
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white border border-[#EADBCE] text-[#8A7A75]">
+                        <div class="flex flex-col flex-1">
+                            <!-- Header Item: Category & Variant Badge -->
+                            <div class="flex items-center justify-between gap-1.5 mb-2 shrink-0">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-[#FAF6F0] border border-[#EADBCE] text-[#8A7A75] uppercase tracking-wider truncate max-w-[120px]">
                                     {{ $menu->category->name ?? 'Menu' }}
                                 </span>
                                 @if($menu->variants->isNotEmpty())
-                                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-[#D9A05B]/15 text-[#C88A42]">
-                                        +Variasi
+                                    <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-[#C88A42] flex items-center gap-1 shrink-0">
+                                        <i class="fa-solid fa-sliders text-[8px]"></i>
+                                        <span>+Variasi</span>
                                     </span>
                                 @endif
                             </div>
 
-                            <!-- Icon / Visual Thumbnail -->
-                            <div class="w-full h-24 rounded-xl bg-white border border-[#EADBCE]/50 flex items-center justify-center text-[#D9A05B] group-hover:scale-105 transition-transform duration-200 mb-3 shadow-xs overflow-hidden">
+                            <!-- Visual Thumbnail (Fixed height, object-cover) -->
+                            <div class="w-full h-28 sm:h-32 rounded-xl bg-[#FAF6F0] border border-[#EADBCE]/60 flex items-center justify-center text-[#D9A05B] group-hover:scale-[1.02] transition-transform duration-200 mb-2.5 shadow-2xs overflow-hidden shrink-0">
                                 @if($menu->image && file_exists(public_path($menu->image)))
                                     <img src="{{ asset($menu->image) }}" alt="{{ $menu->name }}" class="w-full h-full object-cover">
-                                @elseif(str_contains(strtolower($menu->name), 'croissant') || str_contains(strtolower($menu->name), 'roll'))
+                                @elseif(str_contains(strtolower($menu->name), 'croissant') || str_contains(strtolower($menu->name), 'roll') || str_contains(strtolower($menu->name), 'roti') || str_contains(strtolower($menu->name), 'cake'))
                                     <i class="fa-solid fa-bread-slice text-3xl text-amber-600"></i>
-                                @elseif(str_contains(strtolower($menu->name), 'fries') || str_contains(strtolower($menu->name), 'nasi') || str_contains(strtolower($menu->name), 'spaghetti'))
+                                @elseif(str_contains(strtolower($menu->name), 'fries') || str_contains(strtolower($menu->name), 'nasi') || str_contains(strtolower($menu->name), 'spaghetti') || str_contains(strtolower($menu->name), 'pasta') || str_contains(strtolower($menu->name), 'mie'))
                                     <i class="fa-solid fa-bowl-food text-3xl text-amber-700"></i>
-                                @elseif(str_contains(strtolower($menu->name), 'tea') || str_contains(strtolower($menu->name), 'matcha'))
+                                @elseif(str_contains(strtolower($menu->name), 'tea') || str_contains(strtolower($menu->name), 'matcha') || str_contains(strtolower($menu->name), 'lemon') || str_contains(strtolower($menu->name), 'jus'))
                                     <i class="fa-solid fa-leaf text-3xl text-emerald-600"></i>
                                 @else
                                     <i class="fa-solid fa-mug-hot text-3xl text-[#8A5A44]"></i>
                                 @endif
                             </div>
 
-                            <h4 class="text-xs font-bold text-[#3D231D] leading-snug line-clamp-1">{{ $menu->name }}</h4>
-                            <p class="text-[10px] text-[#8A7A75] line-clamp-2 mt-0.5 leading-tight">
-                                {{ $menu->description ?? 'Nikmat dan segar disajikan dari d\'nale caffe.' }}
-                            </p>
+                            <!-- Menu Title & Description -->
+                            <div class="flex-1 flex flex-col justify-start">
+                                <h4 class="text-xs sm:text-sm font-bold text-[#3D231D] leading-snug line-clamp-1 group-hover:text-[#C88A42] transition-colors" title="{{ $menu->name }}">
+                                    {{ $menu->name }}
+                                </h4>
+                                <p class="text-[11px] text-[#8A7A75] line-clamp-2 mt-1 leading-snug">
+                                    {{ $menu->description ?? 'Pilihan favorit racikan barista d\'nale caffe.' }}
+                                </p>
+                            </div>
                         </div>
 
-                        <div class="mt-3 pt-2 border-t border-[#EADBCE]/60 flex items-center justify-between">
-                            <span class="text-xs font-extrabold text-[#3D231D]">{{ $menu->formatted_price }}</span>
-                            <span class="w-7 h-7 rounded-lg bg-[#3D231D] group-hover:bg-[#D9A05B] text-white flex items-center justify-center text-xs shadow-xs transition-colors">
+                        <!-- Bottom Price & Quick Add Button (+) -->
+                        <div class="mt-3 pt-2.5 border-t border-[#EADBCE]/70 flex items-center justify-between shrink-0">
+                            <span class="text-xs sm:text-sm font-extrabold text-[#3D231D] tracking-tight">{{ $menu->formatted_price }}</span>
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#3D231D] group-hover:bg-[#D9A05B] text-white flex items-center justify-center text-xs shadow-xs transition-colors shrink-0" title="Tambahkan Pesanan">
                                 <i class="fa-solid fa-plus"></i>
                             </span>
                         </div>
@@ -126,43 +132,78 @@
         </div>
     </div>
 
-    <!-- RIGHT SECTION: INTERACTIVE CART & BILLING PANEL (WIDTH: 420px) -->
-    <div class="w-full lg:w-[420px] flex-shrink-0 flex flex-col bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-5 overflow-hidden">
+    <!-- KOLOM 3: KERANJANG PESANAN & PANEL PEMBAYARAN / CHECKOUT -->
+    <div class="w-full lg:w-[380px] xl:w-[420px] shrink-0 flex flex-col bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-4 sm:p-5 overflow-hidden h-full min-h-0">
         
-        <!-- CART HEADER -->
-        <div class="flex items-center justify-between pb-3 border-b border-[#EADBCE]">
+        <!-- CART HEADER (PINNED TOP) -->
+        <div class="flex items-center justify-between pb-3 border-b border-[#EADBCE] shrink-0">
             <div>
                 <h3 class="text-sm font-bold text-[#3D231D] flex items-center gap-2">
                     <i class="fa-solid fa-cart-shopping text-[#C88A42]"></i>
                     <span>Keranjang Pesanan</span>
                 </h3>
-                <span id="cart-item-count" class="text-[11px] text-[#8A7A75]">0 item dipilih</span>
+                <span id="cart-item-count" class="text-[11px] text-[#8A7A75] font-medium">0 item dipilih</span>
             </div>
 
-            <button type="button" onclick="clearCart()" class="text-[11px] text-rose-500 hover:text-rose-700 font-semibold flex items-center gap-1">
-                <i class="fa-solid fa-trash-can"></i>
+            <button type="button" onclick="clearCart()" class="text-xs text-rose-500 hover:text-rose-700 font-semibold flex items-center gap-1.5 px-2.5 py-1 rounded-lg hover:bg-rose-50 transition-colors">
+                <i class="fa-solid fa-trash-can text-xs"></i>
                 <span>Reset</span>
             </button>
         </div>
 
-        <!-- CART ITEMS LIST (SCROLLABLE) -->
-        <div id="cart-list" class="flex-1 overflow-y-auto py-3 space-y-2.5 pr-1">
-            <!-- Empty state -->
-            <div id="cart-empty" class="text-center py-14 text-[#8A7A75]">
-                <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-[#FAF6F0] flex items-center justify-center text-[#D9A05B] text-2xl">
-                    <i class="fa-solid fa-basket-shopping"></i>
-                </div>
-                <p class="text-xs font-semibold text-[#3D231D]">Keranjang Masih Kosong</p>
-                <p class="text-[11px] text-[#8A7A75] mt-0.5">Pilih menu di sebelah kiri untuk menambahkan pesanan.</p>
+        <!-- TIPE ORDER & PILIH MEJA (DINE IN / TAKE AWAY) -->
+        <div class="py-3 border-b border-[#EADBCE] space-y-2.5 shrink-0">
+            <!-- Order Type Switcher -->
+            <div class="grid grid-cols-2 p-1 bg-[#FAF6F0] rounded-xl border border-[#EADBCE]">
+                <button type="button" id="btn-type-dine-in" onclick="setOrderType('dine_in')"
+                        class="py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-[#3D231D] text-white shadow-xs">
+                    <i class="fa-solid fa-utensils text-[11px]"></i>
+                    <span>Dine In</span>
+                </button>
+                <button type="button" id="btn-type-take-away" onclick="setOrderType('take_away')"
+                        class="py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 text-[#8A7A75] hover:text-[#3D231D]">
+                    <i class="fa-solid fa-bag-shopping text-[11px]"></i>
+                    <span>Take Away</span>
+                </button>
+            </div>
+
+            <!-- Table Selector (Visible if Dine In) -->
+            <div id="table-select-wrapper" class="flex items-center gap-2">
+                <span class="text-xs font-semibold text-[#8A7A75] whitespace-nowrap">
+                    <i class="fa-solid fa-chair text-[#C88A42] mr-1"></i>Pilih Meja:
+                </span>
+                <select id="select-table" class="flex-1 bg-[#FAF6F0] border border-[#EADBCE] rounded-xl px-3 py-1.5 text-xs font-bold text-[#3D231D] focus:ring-2 focus:ring-[#D9A05B] outline-none transition-all">
+                    <option value="">-- Pilih Nomor Meja --</option>
+                    @foreach($tables as $table)
+                        <option value="{{ $table->id }}" 
+                                data-status="{{ $table->status }}" 
+                                {{ request('table') == $table->id ? 'selected' : '' }}
+                                {{ $table->status !== 'available' ? 'class=text-rose-600' : '' }}>
+                            {{ $table->table_number }} (Kapasitas: {{ $table->capacity }}) - {{ $table->status === 'available' ? 'Tersedia' : ($table->status === 'occupied' ? 'Terisi' : 'Dipesan') }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
-        <!-- BILLING CALCULATIONS -->
-        <div class="pt-3 border-t border-[#EADBCE] space-y-3">
+        <!-- CART ITEMS LIST (SCROLLABLE IN MIDDLE) -->
+        <div id="cart-list" class="flex-1 min-h-0 overflow-y-auto py-3 space-y-2.5 pr-1.5">
+            <!-- Empty state -->
+            <div id="cart-empty" class="text-center py-12 text-[#8A7A75]">
+                <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-[#FAF6F0] border border-[#EADBCE] flex items-center justify-center text-[#D9A05B] text-2xl shadow-2xs">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                </div>
+                <p class="text-xs font-bold text-[#3D231D]">Keranjang Masih Kosong</p>
+                <p class="text-[11px] text-[#8A7A75] mt-1 max-w-[200px] mx-auto leading-relaxed">Pilih menu di katalog sebelah kiri untuk menambahkan pesanan.</p>
+            </div>
+        </div>
+
+        <!-- RINGKASAN PEMBAYARAN & TOMBOL CHECKOUT (PINNED BOTTOM) -->
+        <div class="pt-3 border-t border-[#EADBCE] space-y-3 shrink-0">
             <!-- Price Breakdown (Subtotal & Total Pembayaran) -->
             <div class="bg-[#FAF6F0] p-3.5 rounded-xl border border-[#EADBCE] space-y-2 text-xs">
                 <div class="flex justify-between text-[#8A7A75]">
-                    <span>Subtotal</span>
+                    <span class="font-medium">Subtotal</span>
                     <span id="calc-subtotal" class="font-bold text-[#3D231D]">Rp 0</span>
                 </div>
                 <div class="flex justify-between text-[#8A7A75] border-t border-[#EADBCE]/60 pt-2">
@@ -171,16 +212,16 @@
                 </div>
             </div>
 
-            <!-- ACTION BUTTONS -->
-            <div class="grid grid-cols-2 gap-2 pt-1">
+            <!-- ACTION BUTTONS: TUNAI & QRIS (STABLE FIXED BOTTOM POSITION) -->
+            <div class="grid grid-cols-2 gap-2 pt-0.5">
                 <button type="button" onclick="processCheckout('cash')" id="btn-pay-cash"
-                        class="py-3 px-3 rounded-xl bg-[#3D231D] hover:bg-[#2A1713] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition-all">
+                        class="py-3 px-3 rounded-xl bg-[#3D231D] hover:bg-[#2A1713] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
                     <i class="fa-solid fa-money-bill-wave text-amber-400"></i>
                     <span>Tunai (Cash)</span>
                 </button>
 
                 <button type="button" onclick="processCheckout('qris')" id="btn-pay-qris"
-                        class="py-3 px-3 rounded-xl bg-gradient-to-r from-[#D9A05B] to-[#C88A42] hover:brightness-105 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition-all">
+                        class="py-3 px-3 rounded-xl bg-gradient-to-r from-[#D9A05B] to-[#C88A42] hover:brightness-105 text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
                     <i class="fa-solid fa-qrcode"></i>
                     <span>Bayar QRIS</span>
                 </button>
@@ -607,31 +648,31 @@
         cart.forEach((item, idx) => {
             totalItems += item.quantity;
             const itemRow = document.createElement('div');
-            itemRow.className = 'p-3 bg-[#FAF6F0] rounded-xl border border-[#EADBCE] flex flex-col gap-2 transition-all';
+            itemRow.className = 'p-3 bg-[#FAF6F0]/80 hover:bg-[#FAF6F0] rounded-xl border border-[#EADBCE] flex flex-col gap-2 transition-all hover:border-[#D9A05B]/60';
 
             let variantBadges = '';
             if (item.variants && item.variants.length > 0) {
-                variantBadges = item.variants.map(v => `<span class="inline-block text-[9px] bg-white border border-[#EADBCE] text-[#8A7A75] px-1.5 py-0.5 rounded mr-1">${v.name}</span>`).join('');
+                variantBadges = item.variants.map(v => `<span class="inline-block text-[9px] font-bold bg-white border border-[#EADBCE] text-[#8A7A75] px-1.5 py-0.5 rounded-md mr-1">${v.name}</span>`).join('');
             }
 
-            let notesHtml = item.notes ? `<div class="text-[10px] text-[#C88A42] italic">"${item.notes}"</div>` : '';
+            let notesHtml = item.notes ? `<div class="text-[10px] text-[#C88A42] italic mt-0.5">"${item.notes}"</div>` : '';
 
             itemRow.innerHTML = `
                 <div class="flex items-start justify-between gap-2">
-                    <div class="flex-1">
-                        <h5 class="text-xs font-bold text-[#3D231D]">${item.name}</h5>
+                    <div class="flex-1 min-w-0">
+                        <h5 class="text-xs font-bold text-[#3D231D] leading-tight truncate">${item.name}</h5>
                         <div class="mt-1">${variantBadges}</div>
                         ${notesHtml}
                     </div>
-                    <span class="text-xs font-extrabold text-[#3D231D]">Rp ${item.subtotal.toLocaleString('id-ID')}</span>
+                    <span class="text-xs font-extrabold text-[#3D231D] whitespace-nowrap">Rp ${item.subtotal.toLocaleString('id-ID')}</span>
                 </div>
-                <div class="flex items-center justify-between pt-1 border-t border-[#EADBCE]/50">
-                    <span class="text-[10px] text-[#8A7A75]">@ Rp ${item.unit_price.toLocaleString('id-ID')}</span>
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="updateCartItemQty(${idx}, -1)" class="w-6 h-6 rounded bg-white border border-[#EADBCE] text-[#3D231D] hover:bg-rose-500 hover:text-white flex items-center justify-center font-bold text-xs">-</button>
-                        <span class="text-xs font-extrabold text-[#3D231D] w-4 text-center">${item.quantity}</span>
-                        <button type="button" onclick="updateCartItemQty(${idx}, 1)" class="w-6 h-6 rounded bg-white border border-[#EADBCE] text-[#3D231D] hover:bg-[#D9A05B] hover:text-white flex items-center justify-center font-bold text-xs">+</button>
-                        <button type="button" onclick="removeCartItem(${idx})" class="w-6 h-6 rounded text-rose-500 hover:text-rose-700 ml-1 flex items-center justify-center">
+                <div class="flex items-center justify-between pt-1.5 border-t border-[#EADBCE]/50">
+                    <span class="text-[10px] font-medium text-[#8A7A75]">@ Rp ${item.unit_price.toLocaleString('id-ID')}</span>
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="updateCartItemQty(${idx}, -1)" class="w-7 h-7 rounded-lg bg-white border border-[#EADBCE] text-[#3D231D] hover:bg-rose-500 hover:text-white hover:border-rose-500 flex items-center justify-center font-bold text-xs shadow-2xs transition-all active:scale-90">-</button>
+                        <span class="text-xs font-extrabold text-[#3D231D] w-5 text-center">${item.quantity}</span>
+                        <button type="button" onclick="updateCartItemQty(${idx}, 1)" class="w-7 h-7 rounded-lg bg-white border border-[#EADBCE] text-[#3D231D] hover:bg-[#D9A05B] hover:text-white hover:border-[#D9A05B] flex items-center justify-center font-bold text-xs shadow-2xs transition-all active:scale-90">+</button>
+                        <button type="button" onclick="removeCartItem(${idx})" class="w-7 h-7 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 ml-1 flex items-center justify-center transition-colors" title="Hapus Item">
                             <i class="fa-solid fa-trash-can text-xs"></i>
                         </button>
                     </div>
@@ -827,27 +868,26 @@
     }
 
     function printReceipt() {
-        const receiptContent = document.getElementById('printable-receipt').innerHTML;
-        const win = window.open('', '', 'width=400,height=600');
-        win.document.write(`
-            <html>
-                <head>
-                    <title>Struk d'nale caffe</title>
-                    <style>
-                        body { font-family: monospace; font-size: 12px; margin: 10px; }
-                        .text-center { text-align: center; }
-                        .flex { display: flex; justify-content: space-between; margin-bottom: 3px; }
-                        .font-bold { font-weight: bold; }
-                        .border-b { border-bottom: 1px dashed #333; padding-bottom: 6px; margin-bottom: 6px; }
-                    </style>
-                </head>
-                <body>
-                    ${receiptContent}
-                    <script>window.onload = function() { window.print(); window.close(); }<\/script>
-                </body>
-            </html>
-        `);
-        win.document.close();
+        const receiptEl = document.getElementById('printable-receipt');
+        if (!receiptEl) return;
+        const win = window.open('', '_blank', 'width=420,height=650');
+        if (!win) {
+            window.print();
+            return;
+        }
+        const doc = win.document;
+        doc.title = 'Struk Pembayaran - d\'nale caffe';
+        const style = doc.createElement('style');
+        style.textContent = 'body{font-family:monospace;font-size:12px;margin:16px;color:#231411;background:#fff}.text-center{text-align:center}.flex{display:flex;justify-content:space-between;margin-bottom:3px}.font-bold{font-weight:bold}.border-b{border-bottom:1px dashed #8A7A75;padding-bottom:6px;margin-bottom:6px}';
+        doc.head.appendChild(style);
+        const container = doc.createElement('div');
+        container.innerHTML = receiptEl.innerHTML;
+        doc.body.appendChild(container);
+        win.focus();
+        setTimeout(function() {
+            win.print();
+            win.close();
+        }, 350);
     }
 </script>
 @endpush

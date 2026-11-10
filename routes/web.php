@@ -41,11 +41,21 @@ Route::get('/admin', function () {
 // Protected Application Routes
 Route::middleware('auth')->group(function () {
 
-    // ─── KASIR (Cashier) Routes ───────────────────────────────────────────
+    // ─── KASIR (Cashier) & ADMIN Routes ───────────────────────────────────
     Route::middleware('role:cashier,admin')->group(function () {
         // Terminal POS
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
         Route::post('/pos/order', [PosController::class, 'storeOrder'])->name('pos.order');
+
+        // Bill Aktif
+        Route::get('/bills', [ActiveBillsController::class, 'index'])->name('bills.index');
+        Route::post('/bills/{order}/pay', [ActiveBillsController::class, 'payBill'])->name('bills.pay');
+
+        // Daftar Produk / Menu (Lihat Katalog)
+        Route::get('/menus', [MenuController::class, 'index'])->name('menus.index');
+
+        // Laporan, History & Settlement
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     });
 
     // ─── BAR / DAPUR (Barista) Routes ────────────────────────────────────
@@ -63,12 +73,7 @@ Route::middleware('auth')->group(function () {
         // Quick stock toggle from Dashboard "Menu Habis" widget
         Route::post('/menus/{menu}/toggle', [MenuController::class, 'toggleAvailability'])->name('menus.toggle');
 
-        // 2. Bill Aktif
-        Route::get('/bills', [ActiveBillsController::class, 'index'])->name('bills.index');
-        Route::post('/bills/{order}/pay', [ActiveBillsController::class, 'payBill'])->name('bills.pay');
-
-        // 3. Daftar Menu (Kelola Katalog)
-        Route::get('/menus', [MenuController::class, 'index'])->name('menus.index');
+        // 2. Daftar Menu (Kelola Katalog)
         Route::get('/menus/create', [MenuController::class, 'create'])->name('menus.create');
         Route::post('/menus', [MenuController::class, 'store'])->name('menus.store');
         Route::get('/menus/{menu}/edit', [MenuController::class, 'edit'])->name('menus.edit');
@@ -101,10 +106,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/vouchers/{voucher}/toggle', [VoucherController::class, 'toggle'])->name('vouchers.toggle');
         Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('vouchers.destroy');
 
-        // 8. Laporan Penjualan
-        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-
-        // 9. Pengaturan Kafe & Profil
+        // 8. Pengaturan Kafe & Profil
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings/store', [SettingController::class, 'updateStore'])->name('settings.store');
         Route::post('/settings/profile', [SettingController::class, 'updateProfile'])->name('settings.profile');

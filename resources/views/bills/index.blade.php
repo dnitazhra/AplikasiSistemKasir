@@ -413,16 +413,26 @@
     }
 
     function printBillReceipt() {
-        const html = document.getElementById('printable-bill-receipt').innerHTML;
-        const w = window.open('', '', 'width=380,height=600');
-        w.document.write(`<!DOCTYPE html><html><head><title>Struk d'nale caffe</title>
-            <style>body{font-family:monospace;font-size:12px;margin:10px;color:#111}
-            .text-center{text-align:center}.flex{display:flex;justify-content:space-between;margin-bottom:3px}
-            .font-bold,.font-extrabold,.font-black{font-weight:bold}
-            .border-b{border-bottom:1px dashed #aaa;padding-bottom:5px;margin-bottom:5px}
-            .hidden{display:none}.italic{font-style:italic}</style></head>
-            <body>${html}<script>window.onload=function(){window.print();window.close()}<\/script></body></html>`);
-        w.document.close();
+        const receiptEl = document.getElementById('printable-bill-receipt');
+        if (!receiptEl) return;
+        const w = window.open('', '_blank', 'width=380,height=600');
+        if (!w) {
+            window.print();
+            return;
+        }
+        const doc = w.document;
+        doc.title = 'Struk d\'nale caffe';
+        const style = doc.createElement('style');
+        style.textContent = 'body{font-family:monospace;font-size:12px;margin:10px;color:#111}.text-center{text-align:center}.flex{display:flex;justify-content:space-between;margin-bottom:3px}.font-bold,.font-extrabold,.font-black{font-weight:bold}.border-b{border-bottom:1px dashed #aaa;padding-bottom:5px;margin-bottom:5px}.hidden{display:none}.italic{font-style:italic}';
+        doc.head.appendChild(style);
+        const container = doc.createElement('div');
+        container.innerHTML = receiptEl.innerHTML;
+        doc.body.appendChild(container);
+        w.focus();
+        setTimeout(function() {
+            w.print();
+            w.close();
+        }, 350);
     }
 </script>
 @endpush

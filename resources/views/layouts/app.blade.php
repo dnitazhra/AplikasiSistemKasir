@@ -121,16 +121,69 @@
             <!-- NAVIGATION MENU (INDEPENDENT INTERNAL SCROLL) -->
             <nav id="nav-menu" class="p-4 flex-1 overflow-y-auto hidden md:block">
 
-                @php $userRole = auth()->user()?->role; @endphp
+                @php 
+                    $userRole = auth()->user()?->role; 
+                    $activeBillsCount = \App\Models\Order::where('payment_status', 'pending')->count();
+                @endphp
 
-                {{-- ─── KASIR: Hanya tampil untuk kasir ─── --}}
+                {{-- ─── KASIR: Navigasi Lengkap Kasir ─── --}}
                 @if($userRole === 'cashier')
-                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Kasir</p>
+                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Navigasi Utama</p>
                     <div class="space-y-1 mb-4">
+                        {{-- 1. Terminal Kasir --}}
                         <a href="{{ route('pos.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('pos.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
                             <i class="fa-solid fa-cash-register text-base w-5 text-center {{ request()->routeIs('pos.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                             <span>Terminal Kasir</span>
+                        </a>
+
+                        {{-- 2. Daftar Produk --}}
+                        <a href="{{ route('menus.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('menus.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-boxes-stacked text-base w-5 text-center {{ request()->routeIs('menus.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Daftar Produk</span>
+                        </a>
+
+                        {{-- 3. Order List --}}
+                        <a href="{{ route('kitchen.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-clipboard-list text-base w-5 text-center {{ request()->routeIs('kitchen.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Order List</span>
+                        </a>
+
+                        {{-- 4. Bills / Bill Aktif (dengan badge notifikasi) --}}
+                        <a href="{{ route('bills.index') }}"
+                           class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('bills.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <div class="flex items-center gap-3.5">
+                                <i class="fa-solid fa-file-invoice text-base w-5 text-center {{ request()->routeIs('bills.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                                <span>Bills / Bill Aktif</span>
+                            </div>
+                            @if($activeBillsCount > 0)
+                                <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-500 text-white shadow-xs">
+                                    {{ $activeBillsCount }}
+                                </span>
+                            @endif
+                        </a>
+
+                        {{-- 5. History --}}
+                        <a href="{{ route('reports.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white">
+                            <i class="fa-solid fa-clock-rotate-left text-base w-5 text-center text-[#D9A05B]"></i>
+                            <span>History</span>
+                        </a>
+
+                        {{-- 6. Settlement --}}
+                        <a href="{{ route('reports.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white">
+                            <i class="fa-solid fa-hand-holding-dollar text-base w-5 text-center text-[#D9A05B]"></i>
+                            <span>Settlement</span>
+                        </a>
+
+                        {{-- 7. Report --}}
+                        <a href="{{ route('reports.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-chart-line text-base w-5 text-center {{ request()->routeIs('reports.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Report</span>
                         </a>
                     </div>
                 @endif
@@ -147,7 +200,7 @@
                     </div>
                 @endif
 
-                {{-- ─── ADMIN: Menu lengkap hanya untuk admin ─── --}}
+                {{-- ─── ADMIN: Menu lengkap untuk admin ─── --}}
                 @if($userRole === 'admin')
                     <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Menu Utama</p>
                     <div class="space-y-1 mb-4">
@@ -158,27 +211,39 @@
                         </a>
                     </div>
 
-                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Operasional</p>
+                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Operasional Kasir</p>
                     <div class="space-y-1 mb-4">
                         <a href="{{ route('pos.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('pos.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
                             <i class="fa-solid fa-cash-register text-base w-5 text-center {{ request()->routeIs('pos.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                             <span>Terminal Kasir</span>
                         </a>
-                        <a href="{{ route('bills.index') }}"
-                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('bills.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                            <i class="fa-solid fa-file-invoice text-base w-5 text-center {{ request()->routeIs('bills.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                            <span>Bill Aktif</span>
+                        <a href="{{ route('menus.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('menus.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-boxes-stacked text-base w-5 text-center {{ request()->routeIs('menus.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Daftar Produk</span>
                         </a>
                         <a href="{{ route('kitchen.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                            <i class="fa-solid fa-blender text-base w-5 text-center {{ request()->routeIs('kitchen.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                            <span>Dapur &amp; Bar</span>
+                            <i class="fa-solid fa-clipboard-list text-base w-5 text-center {{ request()->routeIs('kitchen.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Order List</span>
                         </a>
-                        <a href="{{ route('menus.index') }}"
-                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('menus.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                            <i class="fa-solid fa-book-open text-base w-5 text-center {{ request()->routeIs('menus.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                            <span>Daftar Menu</span>
+                        <a href="{{ route('bills.index') }}"
+                           class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('bills.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <div class="flex items-center gap-3.5">
+                                <i class="fa-solid fa-file-invoice text-base w-5 text-center {{ request()->routeIs('bills.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                                <span>Bills / Bill Aktif</span>
+                            </div>
+                            @if($activeBillsCount > 0)
+                                <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-500 text-white shadow-xs">
+                                    {{ $activeBillsCount }}
+                                </span>
+                            @endif
+                        </a>
+                        <a href="{{ route('reports.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-chart-line text-base w-5 text-center {{ request()->routeIs('reports.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Laporan Penjualan</span>
                         </a>
                     </div>
 
@@ -199,15 +264,6 @@
                             <i class="fa-solid fa-users text-base w-5 text-center {{ request()->routeIs('users.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                             <span>Kelola Karyawan</span>
                         </a>
-                    </div>
-
-                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Laporan &amp; Sistem</p>
-                    <div class="space-y-1 mb-2">
-                        <a href="{{ route('reports.index') }}"
-                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                            <i class="fa-solid fa-chart-line text-base w-5 text-center {{ request()->routeIs('reports.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                            <span>Laporan Penjualan</span>
-                        </a>
                         <a href="{{ route('settings.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('settings.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
                             <i class="fa-solid fa-gear text-base w-5 text-center {{ request()->routeIs('settings.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
@@ -220,25 +276,27 @@
         </div>
 
         <!-- USER PROFILE FOOTER & LOGOUT (FIXED BOTTOM) -->
-        <div class="p-4 border-t border-[#4A2E2B] bg-[#2A1713]/60 flex-shrink-0">
+        <div class="p-4 border-t border-[#4A2E2B] bg-[#2A1713]/80 flex-shrink-0">
             <div class="flex items-center justify-between mb-3 px-2">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-[#D9A05B]/20 border border-[#D9A05B]/40 flex items-center justify-center text-[#D9A05B] font-bold text-sm">
-                        {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#C88A42] to-[#D9A05B] border border-[#D9A05B]/40 flex items-center justify-center text-white font-extrabold text-sm shadow-md">
+                        {{ strtoupper(substr(auth()->user()->name ?? 'S', 0, 1)) }}
                     </div>
-                    <div>
-                        <p class="text-sm font-semibold text-white leading-tight truncate w-32">{{ auth()->user()->name ?? 'Admin d\'nale' }}</p>
-                        <span class="inline-block text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full mt-0.5 bg-amber-500/20 text-amber-300">
-                            {{ auth()->user()->role ?? 'Admin' }}
+                    <div class="min-w-0">
+                        <p class="text-sm font-bold text-white leading-tight truncate w-32" title="{{ auth()->user()->name ?? 'Siti Kasir' }}">
+                            {{ auth()->user()->name ?? 'Siti Kasir' }}
+                        </p>
+                        <span class="inline-block text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            {{ auth()->user()->role ?? 'CASHIER' }}
                         </span>
                     </div>
                 </div>
             </div>
 
-            <!-- Logout Form -->
+            <!-- Logout Form (Merah Bata) -->
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl text-rose-300 hover:text-white hover:bg-rose-600/80 transition-all duration-200">
+                <button type="submit" class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold rounded-xl text-white bg-rose-700/80 hover:bg-rose-600 transition-all duration-200 shadow-sm hover:shadow active:scale-95 cursor-pointer">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Logout dari Sistem</span>
                 </button>
@@ -247,10 +305,10 @@
     </aside>
 
     <!-- 2. TAMPILAN KONTEN UTAMA (KANAN - INDEPENDENT SCROLL AREA) -->
-    <div id="main-content-scroll" class="flex-1 flex flex-col h-screen overflow-y-auto min-w-0 bg-[#FAF6F0]">
+    <div id="main-content-scroll" class="flex-1 flex flex-col h-screen {{ request()->routeIs('pos.*') ? 'lg:overflow-hidden overflow-y-auto' : 'overflow-y-auto' }} min-w-0 bg-[#FAF6F0]">
 
         <!-- TOPBAR HEADER (PINNED / STICKY AT TOP) -->
-        <header class="bg-white border-b border-[#EADBCE] sticky top-0 z-20 shadow-sm px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 flex-shrink-0">
+        <header class="bg-white border-b border-[#EADBCE] sticky top-0 z-20 shadow-sm {{ request()->routeIs('pos.*') ? 'px-4 sm:px-6 py-3' : 'px-6 py-4' }} flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 flex-shrink-0">
             <div>
                 <h2 class="text-xl font-bold text-[#3D231D] tracking-tight">@yield('page_title', 'Dashboard Ringkasan')</h2>
                 <div class="flex items-center gap-2 text-xs text-[#8A7A75] mt-0.5">
@@ -301,41 +359,45 @@
         </header>
 
         <!-- FLASH NOTIFICATIONS -->
-        <div class="px-6 pt-5">
-            @if(session('success'))
-                <div class="bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 p-4 rounded-xl shadow-sm flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>
-                        <span class="text-sm font-medium">{{ session('success') }}</span>
+        @if(session('success') || session('error'))
+            <div class="{{ request()->routeIs('pos.*') ? 'px-4 sm:px-6 pt-3' : 'px-6 pt-5' }}">
+                @if(session('success'))
+                    <div class="bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 p-3 sm:p-4 rounded-xl shadow-sm flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-circle-check text-emerald-500 text-base sm:text-lg"></i>
+                            <span class="text-xs sm:text-sm font-medium">{{ session('success') }}</span>
+                        </div>
+                        <button type="button" onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
-                    <button type="button" onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-            @endif
+                @endif
 
-            @if(session('error'))
-                <div class="bg-rose-50 border-l-4 border-rose-500 text-rose-800 p-4 rounded-xl shadow-sm flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-circle-exclamation text-rose-500 text-lg"></i>
-                        <span class="text-sm font-medium">{{ session('error') }}</span>
+                @if(session('error'))
+                    <div class="bg-rose-50 border-l-4 border-rose-500 text-rose-800 p-3 sm:p-4 rounded-xl shadow-sm flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-circle-exclamation text-rose-500 text-base sm:text-lg"></i>
+                            <span class="text-xs sm:text-sm font-medium">{{ session('error') }}</span>
+                        </div>
+                        <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
-                    <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-            @endif
-        </div>
+                @endif
+            </div>
+        @endif
 
         <!-- MAIN PAGE CONTENT -->
-        <main class="flex-1 p-6">
+        <main class="flex-1 {{ request()->routeIs('pos.*') ? 'p-3 sm:p-4 lg:p-5 lg:overflow-hidden flex flex-col min-h-0' : 'p-6' }}">
             @yield('content')
         </main>
 
+        @if(!request()->routeIs('pos.*'))
         <!-- FOOTER -->
-        <footer class="px-6 py-4 border-t border-[#EADBCE] text-center text-xs text-[#8A7A75] bg-white">
+        <footer class="px-6 py-4 border-t border-[#EADBCE] text-center text-xs text-[#8A7A75] bg-white flex-shrink-0">
             <p>&copy; {{ date('Y') }} <strong>d'nale caffe</strong> — Sistem Kasir & Manajemen Kafe Modern. Built with Laravel & Tailwind CSS.</p>
         </footer>
+        @endif
     </div>
 
     <!-- Scripts -->
