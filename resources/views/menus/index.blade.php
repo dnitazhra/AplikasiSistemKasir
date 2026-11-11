@@ -29,8 +29,10 @@
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[#C88A42]">
                         <i class="fa-solid fa-magnifying-glass text-sm"></i>
                     </span>
-                    <input type="text" name="search" value="{{ $search ?? '' }}"
+                    <input type="text" name="search" id="input-search"
+                           value="{{ $search }}"
                            placeholder="Nama atau kode menu"
+                           autocomplete="off"
                            class="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-[#EADBCE] bg-[#FAF6F0] text-[#2D2422] placeholder-[#B9A99A] focus:outline-none focus:ring-2 focus:ring-[#D9A05B]/40 focus:border-[#D9A05B] transition-all">
                 </div>
             </div>
@@ -39,11 +41,13 @@
             <div class="w-full sm:w-52">
                 <label class="block text-xs font-semibold text-[#3D231D] mb-1.5 tracking-wide">Kategori</label>
                 <div class="relative">
-                    <select name="category_id"
-                            class="w-full appearance-none px-4 py-2.5 text-sm rounded-xl border border-[#EADBCE] bg-[#FAF6F0] text-[#2D2422] focus:outline-none focus:ring-2 focus:ring-[#D9A05B]/40 focus:border-[#D9A05B] transition-all pr-9">
+                    <select name="category_id" id="select-category"
+                            onchange="document.getElementById('filter-form').submit()"
+                            class="w-full appearance-none px-4 py-2.5 text-sm rounded-xl border border-[#EADBCE] bg-[#FAF6F0] text-[#2D2422] focus:outline-none focus:ring-2 focus:ring-[#D9A05B]/40 focus:border-[#D9A05B] transition-all pr-9 cursor-pointer">
                         <option value="">Semua kategori</option>
                         @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ ($categoryId ?? '') == $cat->id ? 'selected' : '' }}>
+                            <option value="{{ $cat->id }}"
+                                {{ $categoryId !== '' && (int)$categoryId === $cat->id ? 'selected' : '' }}>
                                 {{ $cat->name }}
                             </option>
                         @endforeach
@@ -58,11 +62,12 @@
             <div class="w-full sm:w-44">
                 <label class="block text-xs font-semibold text-[#3D231D] mb-1.5 tracking-wide">Ketersediaan</label>
                 <div class="relative">
-                    <select name="available"
-                            class="w-full appearance-none px-4 py-2.5 text-sm rounded-xl border border-[#EADBCE] bg-[#FAF6F0] text-[#2D2422] focus:outline-none focus:ring-2 focus:ring-[#D9A05B]/40 focus:border-[#D9A05B] transition-all pr-9">
+                    <select name="available" id="select-available"
+                            onchange="document.getElementById('filter-form').submit()"
+                            class="w-full appearance-none px-4 py-2.5 text-sm rounded-xl border border-[#EADBCE] bg-[#FAF6F0] text-[#2D2422] focus:outline-none focus:ring-2 focus:ring-[#D9A05B]/40 focus:border-[#D9A05B] transition-all pr-9 cursor-pointer">
                         <option value="">Semua</option>
-                        <option value="1" {{ request('available') === '1' ? 'selected' : '' }}>Tersedia</option>
-                        <option value="0" {{ request('available') === '0' ? 'selected' : '' }}>Tidak Tersedia</option>
+                        <option value="1" {{ $available === '1' ? 'selected' : '' }}>Tersedia</option>
+                        <option value="0" {{ $available === '0' ? 'selected' : '' }}>Tidak Tersedia</option>
                     </select>
                     <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#C88A42]">
                         <i class="fa-solid fa-chevron-down text-xs"></i>
@@ -84,6 +89,35 @@
                 </a>
             </div>
         </div>
+
+        {{-- Indikator filter aktif --}}
+        @if($categoryId !== '' || $search !== '' || $available !== '')
+        <div class="flex items-center gap-2 mt-3 pt-3 border-t border-[#F5EDE3]">
+            <span class="text-xs text-[#8A7A75]">Filter aktif:</span>
+            @if($categoryId !== '')
+                @php $activeCat = $categories->firstWhere('id', (int)$categoryId); @endphp
+                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-[#FDF6ED] text-[#C88A42] border border-[#EADBCE] px-2.5 py-1 rounded-full">
+                    <i class="fa-solid fa-tags text-[10px]"></i>
+                    {{ $activeCat?->name ?? 'Kategori' }}
+                </span>
+            @endif
+            @if($search !== '')
+                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-[#FDF6ED] text-[#C88A42] border border-[#EADBCE] px-2.5 py-1 rounded-full">
+                    <i class="fa-solid fa-magnifying-glass text-[10px]"></i>
+                    "{{ $search }}"
+                </span>
+            @endif
+            @if($available === '1')
+                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full">
+                    <i class="fa-solid fa-circle text-[8px]"></i> Tersedia
+                </span>
+            @elseif($available === '0')
+                <span class="inline-flex items-center gap-1 text-xs font-semibold bg-rose-50 text-rose-600 border border-rose-200 px-2.5 py-1 rounded-full">
+                    <i class="fa-solid fa-circle text-[8px]"></i> Habis
+                </span>
+            @endif
+        </div>
+        @endif
     </form>
 </div>
 
@@ -129,9 +163,9 @@
         @foreach($menus as $menu)
         @php
             $price      = (float) $menu->price;
-            $modal      = round($price * 0.65, 0);   // estimasi 65% COGS
+            $modal      = round($price * 0.65, 0);
             $margin     = $price - $modal;
-            $isFav      = $menu->orderDetails()->sum('quantity') >= 10;
+            $isFav      = false; // deteksi favorit via orderDetails tidak di-eager-load di halaman ini
             $codePrefix = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $menu->category?->name ?? 'PRD'), 0, 3));
             $codeSuffix = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $menu->name), 0, 3));
             $code       = $codePrefix . '-' . $codeSuffix;
@@ -170,9 +204,20 @@
                          alt="{{ $menu->name }}"
                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                 @else
-                    {{-- Placeholder ilustratif --}}
-                    <div class="flex flex-col items-center gap-2 text-[#D9A05B]/60">
-                        <i class="fa-solid fa-mug-hot text-4xl"></i>
+                    {{-- Placeholder icon berdasarkan kategori --}}
+                    @php
+                        $catSlug = $menu->category?->slug ?? '';
+                        $placeholderIcon = match(true) {
+                            $catSlug === 'coffee'      => ['fa-mug-hot',    'text-[#8A5A44]'],
+                            $catSlug === 'non-coffee'  => ['fa-glass-water','text-teal-500'],
+                            $catSlug === 'dessert'     => ['fa-cake-candles','text-pink-400'],
+                            $catSlug === 'main-course' => ['fa-bowl-food',  'text-amber-700'],
+                            $catSlug === 'snacks'      => ['fa-cookie-bite','text-orange-400'],
+                            default                    => ['fa-utensils',   'text-[#D9A05B]'],
+                        };
+                    @endphp
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="fa-solid {{ $placeholderIcon[0] }} text-4xl {{ $placeholderIcon[1] }} opacity-50"></i>
                         <span class="text-[10px] font-medium text-[#B9A99A] uppercase tracking-wider">No Image</span>
                     </div>
                 @endif

@@ -106,14 +106,19 @@
                             <div class="w-full h-28 sm:h-32 rounded-xl bg-[#FAF6F0] border border-[#EADBCE]/60 flex items-center justify-center text-[#D9A05B] group-hover:scale-[1.02] transition-transform duration-200 mb-2.5 shadow-2xs overflow-hidden shrink-0">
                                 @if($menu->image && file_exists(public_path($menu->image)))
                                     <img src="{{ asset($menu->image) }}" alt="{{ $menu->name }}" class="w-full h-full object-cover">
-                                @elseif(str_contains(strtolower($menu->name), 'croissant') || str_contains(strtolower($menu->name), 'roll') || str_contains(strtolower($menu->name), 'roti') || str_contains(strtolower($menu->name), 'cake'))
-                                    <i class="fa-solid fa-bread-slice text-3xl text-amber-600"></i>
-                                @elseif(str_contains(strtolower($menu->name), 'fries') || str_contains(strtolower($menu->name), 'nasi') || str_contains(strtolower($menu->name), 'spaghetti') || str_contains(strtolower($menu->name), 'pasta') || str_contains(strtolower($menu->name), 'mie'))
-                                    <i class="fa-solid fa-bowl-food text-3xl text-amber-700"></i>
-                                @elseif(str_contains(strtolower($menu->name), 'tea') || str_contains(strtolower($menu->name), 'matcha') || str_contains(strtolower($menu->name), 'lemon') || str_contains(strtolower($menu->name), 'jus'))
-                                    <i class="fa-solid fa-leaf text-3xl text-emerald-600"></i>
                                 @else
-                                    <i class="fa-solid fa-mug-hot text-3xl text-[#8A5A44]"></i>
+                                    @php
+                                        $slug = $menu->category?->slug ?? '';
+                                        [$pIcon, $pColor] = match(true) {
+                                            $slug === 'coffee'      => ['fa-mug-hot',    'text-[#8A5A44]'],
+                                            $slug === 'non-coffee'  => ['fa-glass-water','text-teal-500'],
+                                            $slug === 'dessert'     => ['fa-cake-candles','text-pink-400'],
+                                            $slug === 'main-course' => ['fa-bowl-food',  'text-amber-700'],
+                                            $slug === 'snacks'      => ['fa-cookie-bite','text-orange-400'],
+                                            default                 => ['fa-utensils',   'text-[#D9A05B]'],
+                                        };
+                                    @endphp
+                                    <i class="fa-solid {{ $pIcon }} text-3xl {{ $pColor }} opacity-50"></i>
                                 @endif
                             </div>
 
@@ -485,42 +490,58 @@
         }
     }
 
+    // ── State filter aktif ──────────────────────────────────────────────
+    let activeCategoryId = 'all';
+
     // Filter Menus by Category
     function filterCategory(catId, button) {
+        activeCategoryId = catId;
+
+        // Reset semua pill ke style non-aktif, pertahankan icon di dalam
         document.querySelectorAll('.cat-pill').forEach(btn => {
-            btn.className = 'cat-pill px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all bg-[#FAF6F0] text-[#3D231D] hover:bg-[#EADBCE]';
-        });
-        button.className = 'cat-pill active px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all bg-[#D9A05B] text-white shadow-xs';
-
-        const cards = document.querySelectorAll('.menu-card');
-        let visibleCount = 0;
-
-        cards.forEach(card => {
-            const matchesCat = (catId === 'all' || card.dataset.category === catId);
-            const matchesSearch = card.dataset.name.includes(document.getElementById('pos-search').value.toLowerCase().trim());
-
-            if (matchesCat && matchesSearch) {
-                card.style.display = 'flex';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
+            btn.classList.remove('bg-[#D9A05B]', 'text-white', 'shadow-xs', 'font-bold', 'active');
+            btn.classList.add('bg-[#FAF6F0]', 'text-[#3D231D]', 'font-semibold');
+            // Kembalikan warna icon ke amber
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('text-white');
+                icon.classList.add('text-[#C88A42]');
             }
         });
 
-        document.getElementById('no-menus-message').classList.toggle('hidden', visibleCount > 0);
+        // Aktifkan pill yang diklik
+        button.classList.remove('bg-[#FAF6F0]', 'text-[#3D231D]', 'font-semibold');
+        button.classList.add('bg-[#D9A05B]', 'text-white', 'shadow-xs', 'font-bold', 'active');
+        const activeIcon = button.querySelector('i');
+        if (activeIcon) {
+            activeIcon.classList.remove('text-[#C88A42]');
+            activeIcon.classList.add('text-white');
+        }
+
+        applyFilters();
     }
 
     // Filter Menus by Search
     function filterMenus() {
+        applyFilters();
+    }
+
+    // ── Fungsi filter terpadu: kategori + pencarian ─────────────────────
+    function applyFilters() {
         const searchVal = document.getElementById('pos-search').value.toLowerCase().trim();
-        const activeCatBtn = document.querySelector('.cat-pill.active');
-        const cards = document.querySelectorAll('.menu-card');
+        const cards     = document.querySelectorAll('.menu-card');
         let visibleCount = 0;
 
         cards.forEach(card => {
-            const matchesSearch = card.dataset.name.includes(searchVal);
-            card.style.display = matchesSearch ? 'flex' : 'none';
-            if (matchesSearch) visibleCount++;
+            const matchesCat    = activeCategoryId === 'all' || card.dataset.category === String(activeCategoryId);
+            const matchesSearch = searchVal === '' || card.dataset.name.includes(searchVal);
+
+            if (matchesCat && matchesSearch) {
+                card.style.display = '';   // kembalikan ke default (flex dari class Tailwind)
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
         });
 
         document.getElementById('no-menus-message').classList.toggle('hidden', visibleCount > 0);

@@ -16,28 +16,28 @@ class MenuController extends Controller
 {
     public function index(Request $request): View
     {
-        $search     = $request->query('search');
-        $categoryId = $request->query('category_id');
-        $available  = $request->query('available');   // '1', '0', or null
+        $search     = $request->query('search', '');
+        $categoryId = $request->query('category_id', '');
+        $available  = $request->query('available', '');
 
-        $query = Menu::with(['category', 'variants', 'orderDetails']);
+        $query = Menu::with(['category', 'variants']);
 
-        if ($search) {
+        if ($search !== '') {
             $query->where('name', 'like', "%{$search}%");
         }
 
-        if ($categoryId) {
-            $query->where('category_id', $categoryId);
+        if ($categoryId !== '') {
+            $query->where('category_id', (int) $categoryId);
         }
 
-        if ($available !== null && $available !== '') {
-            $query->where('is_available', (bool) $available);
+        if ($available !== '') {
+            $query->where('is_available', $available === '1');
         }
 
         $menus      = $query->orderBy('name')->paginate(12)->withQueryString();
         $categories = Category::orderBy('name')->get();
 
-        return view('menus.index', compact('menus', 'categories', 'search', 'categoryId'));
+        return view('menus.index', compact('menus', 'categories', 'search', 'categoryId', 'available'));
     }
 
     public function create(): View
