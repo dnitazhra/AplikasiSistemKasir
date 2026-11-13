@@ -107,7 +107,7 @@
     {{-- ─────────────────────────────────────────────── --}}
     {{-- RINGKASAN METRIK UTAMA (KPI CARDS)             --}}
     {{-- ─────────────────────────────────────────────── --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {{-- 1. Total Pendapatan --}}
         <div class="bg-white rounded-2xl border border-[#EADBCE] p-5 shadow-dnale flex items-center justify-between">
             <div>
@@ -145,18 +145,6 @@
             </div>
             <div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-scale-balanced"></i>
-            </div>
-        </div>
-
-        {{-- 4. Total Diskon Diberikan --}}
-        <div class="bg-white rounded-2xl border border-[#EADBCE] p-5 shadow-dnale flex items-center justify-between">
-            <div>
-                <p class="text-[11px] font-bold text-[#8A7A75] uppercase tracking-wider">Potongan Promo</p>
-                <h3 class="text-xl font-extrabold text-[#3D231D] mt-1">Rp {{ number_format($totalDiscountGiven, 0, ',', '.') }}</h3>
-                <p class="text-[10px] text-rose-500 font-semibold mt-1">Voucher Diskon Kasir</p>
-            </div>
-            <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-500 flex items-center justify-center text-xl">
-                <i class="fa-solid fa-tags"></i>
             </div>
         </div>
     </div>
@@ -302,7 +290,6 @@
                         <th class="py-3 px-4">Tipe / Meja</th>
                         <th class="py-3 px-4">Metode</th>
                         <th class="py-3 px-4 text-right">Subtotal</th>
-                        <th class="py-3 px-4 text-right">Diskon</th>
                         <th class="py-3 px-4 text-right">Total Bayar</th>
                         <th class="py-3 px-4 text-center">Status</th>
                     </tr>
@@ -336,9 +323,6 @@
                             <td class="py-3.5 px-4 text-right font-medium text-[#8A7A75]">
                                 Rp {{ number_format($ord->subtotal, 0, ',', '.') }}
                             </td>
-                            <td class="py-3.5 px-4 text-right font-medium text-rose-500">
-                                {{ $ord->discount_amount > 0 ? '-Rp ' . number_format($ord->discount_amount, 0, ',', '.') : '-' }}
-                            </td>
                             <td class="py-3.5 px-4 text-right font-extrabold text-[#3D231D]">
                                 Rp {{ number_format($ord->total_amount, 0, ',', '.') }}
                             </td>
@@ -351,7 +335,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="py-10 text-center text-[#8A7A75]">
+                            <td colspan="8" class="py-10 text-center text-[#8A7A75]">
                                 <i class="fa-solid fa-file-invoice text-3xl mb-2 text-[#D9A05B]"></i>
                                 <p class="text-xs font-semibold">Tidak ada transaksi ditemukan pada kriteria dan rentang tanggal ini.</p>
                             </td>

@@ -1,2 +1,3 @@
 <?php
+
 // Scratch file removed

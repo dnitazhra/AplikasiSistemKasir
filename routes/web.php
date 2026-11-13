@@ -10,6 +10,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
@@ -93,6 +94,7 @@ Route::middleware('auth')->group(function () {
 
         // 9. Laporan Penjualan, History & Settlement
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/settlement', [SettlementController::class, 'index'])->name('settlement.index');
 
         // 10. Pengaturan Kafe & Profil
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');

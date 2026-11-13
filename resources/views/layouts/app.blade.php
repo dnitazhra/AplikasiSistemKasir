@@ -180,9 +180,9 @@
                         </a>
 
                         {{-- 7. Settlement --}}
-                        <a href="{{ route('reports.index') }}"
-                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white">
-                            <i class="fa-solid fa-hand-holding-dollar text-base w-5 text-center text-[#D9A05B]"></i>
+                        <a href="{{ route('settlement.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('settlement.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-hand-holding-dollar text-base w-5 text-center {{ request()->routeIs('settlement.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                             <span>Settlement</span>
                         </a>
 
@@ -246,6 +246,11 @@
                                     {{ $activeBillsCount }}
                                 </span>
                             @endif
+                        </a>
+                        <a href="{{ route('settlement.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('settlement.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-hand-holding-dollar text-base w-5 text-center {{ request()->routeIs('settlement.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Tutup Kasir (Settlement)</span>
                         </a>
                         <a href="{{ route('reports.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">

@@ -42,6 +42,7 @@ class NavbarNavigationTest extends TestCase
             'tables.index',
             'users.index',
             'reports.index',
+            'settlement.index',
             'settings.index',
         ];
 
@@ -53,6 +54,11 @@ class NavbarNavigationTest extends TestCase
         // Pastikan menu Voucher & Promo tidak ada di navbar
         $dashboardResponse = $this->actingAs($user)->get(route('dashboard'));
         $dashboardResponse->assertDontSee('Voucher &amp; Promo', false);
+
+        // Pastikan pada halaman laporan penjualan (Report/Laporan Penjualan) tidak ada bagian Potongan Promo
+        $reportsResponse = $this->actingAs($user)->get(route('reports.index'));
+        $reportsResponse->assertStatus(200);
+        $reportsResponse->assertDontSee('Potongan Promo');
     }
 
     /**
@@ -95,6 +101,7 @@ class NavbarNavigationTest extends TestCase
             'kitchen.index',
             'menus.index',
             'tables.index',
+            'settlement.index',
             'reports.index',
         ];
 
@@ -102,6 +109,54 @@ class NavbarNavigationTest extends TestCase
             $response = $this->actingAs($cashier)->get(route($routeName));
             $response->assertStatus(200);
         }
+
+        // Pastikan di halaman Report kasir tidak ada bagian Potongan Promo
+        $cashierReportResponse = $this->actingAs($cashier)->get(route('reports.index'));
+        $cashierReportResponse->assertStatus(200);
+        $cashierReportResponse->assertDontSee('Potongan Promo');
+    }
+
+    /**
+     * Memastikan halaman settlement (Tutup Kasir) menampilkan informasi shift, metrik, metode pembayaran, dan rincian menu.
+     */
+    public function test_settlement_page_renders_correctly_with_shift_info_and_metrics(): void
+    {
+        $cashier = $this->getCashierUser();
+
+        $response = $this->actingAs($cashier)->get(route('settlement.index'));
+        $response->assertStatus(200);
+
+        // Header
+        $response->assertSee('Tutup Kasir (Settlement Shift)');
+        $response->assertSee('Hari Ini');
+        $response->assertSee('Rekapitulasi setoran kasir dan rincian penjualan');
+        $response->assertSee('Cetak Bukti Settlement');
+        $response->assertSee('Ke Laporan Penjualan');
+
+        // Informasi Toko & Kasir
+        $response->assertSee("d'nale caffe");
+        $response->assertSee('Jl. Merdeka No. 12, Bandung');
+        $response->assertSee('Shift Bertugas');
+
+        // Ringkasan Statistik
+        $response->assertSee('Total Omset Lunas');
+        $response->assertSee('Uang masuk hari ini');
+        $response->assertSee('Total Transaksi');
+        $response->assertSee('Struk berhasil dibayar');
+        $response->assertSee('Produk Terjual');
+        $response->assertSee('Total porsi/cup menu');
+        $response->assertSee('Rata-Rata Transaksi');
+        $response->assertSee('Per pesanan pelanggan');
+
+        // Metode Pembayaran
+        $response->assertSee('Rincian Penerimaan Berdasarkan Metode Pembayaran');
+        $response->assertSee('Gunakan kolom Tunai untuk mencocokkan jumlah uang fisik di laci kasir (Cash Drawer).');
+        $response->assertSee('Uang Fisik di Laci Kasir');
+        $response->assertSee('Masuk ke Rekening / E-Wallet');
+
+        // Rincian Menu
+        $response->assertSee('Rincian Menu yang Berhasil Terjual Hari Ini');
+        $response->assertSee('Daftar item makanan dan minuman beserta kuantitas dan total nilai penjualan.');
     }
 
     /**
@@ -119,6 +174,7 @@ class NavbarNavigationTest extends TestCase
                 'status' => 'occupied',
             ]
         );
+        $table->update(['status' => 'occupied']);
 
         // Kasir dapat melihat daftar meja dan tombol "Tandai Sudah Kosong"
         $response = $this->actingAs($cashier)->get(route('tables.index'));
