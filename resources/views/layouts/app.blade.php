@@ -173,9 +173,9 @@
                         </a>
 
                         {{-- 6. History --}}
-                        <a href="{{ route('reports.index') }}"
-                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white">
-                            <i class="fa-solid fa-clock-rotate-left text-base w-5 text-center text-[#D9A05B]"></i>
+                        <a href="{{ route('history.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('history.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-clock-rotate-left text-base w-5 text-center {{ request()->routeIs('history.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                             <span>History</span>
                         </a>
 
@@ -246,6 +246,11 @@
                                     {{ $activeBillsCount }}
                                 </span>
                             @endif
+                        </a>
+                        <a href="{{ route('history.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('history.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-clock-rotate-left text-base w-5 text-center {{ request()->routeIs('history.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Riwayat Transaksi (History)</span>
                         </a>
                         <a href="{{ route('settlement.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('settlement.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">

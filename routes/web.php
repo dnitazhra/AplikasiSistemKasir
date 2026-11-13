@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CafeTableController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PosController;
@@ -93,6 +94,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('vouchers.destroy');
 
         // 9. Laporan Penjualan, History & Settlement
+        Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/settlement', [SettlementController::class, 'index'])->name('settlement.index');
 

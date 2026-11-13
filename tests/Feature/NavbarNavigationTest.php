@@ -41,6 +41,7 @@ class NavbarNavigationTest extends TestCase
             'categories.index',
             'tables.index',
             'users.index',
+            'history.index',
             'reports.index',
             'settlement.index',
             'settings.index',
@@ -101,6 +102,7 @@ class NavbarNavigationTest extends TestCase
             'kitchen.index',
             'menus.index',
             'tables.index',
+            'history.index',
             'settlement.index',
             'reports.index',
         ];
@@ -114,6 +116,45 @@ class NavbarNavigationTest extends TestCase
         $cashierReportResponse = $this->actingAs($cashier)->get(route('reports.index'));
         $cashierReportResponse->assertStatus(200);
         $cashierReportResponse->assertDontSee('Potongan Promo');
+    }
+
+    /**
+     * Memastikan halaman riwayat transaksi (History) menampilkan metrik, filter, dan tabel transaksi hari ini.
+     */
+    public function test_history_page_renders_correctly_with_metrics_filter_and_table(): void
+    {
+        $cashier = $this->getCashierUser();
+
+        $response = $this->actingAs($cashier)->get(route('history.index'));
+        $response->assertStatus(200);
+
+        // Header
+        $response->assertSee('Riwayat Transaksi Hari Ini');
+        $response->assertSee('Rekapitulasi pesanan lunas khusus hari ini.');
+        $response->assertSee('Lihat Tutup Kasir (Settlement)');
+        $response->assertSee('Buka Kasir');
+
+        // Statistik Ringkasan
+        $response->assertSee('Total Transaksi Lunas');
+        $response->assertSee('Total Item Terjual');
+        $response->assertSee('Total Omset Hari Ini');
+
+        // Filter
+        $response->assertSee('placeholder="Cari no struk atau nama pelanggan..."', false);
+        $response->assertSee('Semua Metode Pembayaran');
+        $response->assertSee('Filter');
+        $response->assertSee('Reset');
+
+        // Tabel Header
+        $response->assertSee('NO. STRUK');
+        $response->assertSee('JAM');
+        $response->assertSee('MEJA / TIPE');
+        $response->assertSee('PELANGGAN');
+        $response->assertSee('KASIR');
+        $response->assertSee('ITEM PESANAN');
+        $response->assertSee('METODE');
+        $response->assertSee('TOTAL');
+        $response->assertSee('CETAK');
     }
 
     /**
