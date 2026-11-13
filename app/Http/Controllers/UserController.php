@@ -14,6 +14,7 @@ class UserController extends Controller
     public function index(): View
     {
         $users = User::orderBy('name')->get();
+
         return view('users.index', compact('users'));
     }
 
@@ -44,8 +45,8 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:50', 'unique:users,username,' . $user->id],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'username' => ['required', 'string', 'max:50', 'unique:users,username,'.$user->id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
             'password' => ['nullable', 'string', 'min:6'],
             'role' => ['required', Rule::in(['admin', 'cashier', 'barista'])],
             'phone' => ['nullable', 'string', 'max:20'],
@@ -59,7 +60,7 @@ class UserController extends Controller
             'phone' => $validated['phone'] ?? null,
         ];
 
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $updateData['password'] = Hash::make($validated['password']);
         }
 
@@ -75,6 +76,7 @@ class UserController extends Controller
         }
 
         $user->delete();
+
         return redirect()->route('users.index')->with('success', 'Karyawan berhasil dihapus.');
     }
 }

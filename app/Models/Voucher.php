@@ -34,7 +34,7 @@ class Voucher extends Model
 
     public function calculateDiscount(float $subtotal): float
     {
-        if (!$this->is_active || $subtotal < $this->min_order_amount) {
+        if (! $this->is_active || $subtotal < $this->min_order_amount) {
             return 0.00;
         }
 

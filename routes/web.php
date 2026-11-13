@@ -41,74 +41,69 @@ Route::get('/admin', function () {
 // Protected Application Routes
 Route::middleware('auth')->group(function () {
 
-    // ─── KASIR (Cashier) & ADMIN Routes ───────────────────────────────────
-    Route::middleware('role:cashier,admin')->group(function () {
-        // Terminal POS
+    // ─── ADMIN ONLY Routes (Dashboard Khusus Admin) ───────────────────────
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    });
+
+    // ─── KASIR (Cashier) & ADMIN Routes (Operasional & Manajemen) ────────
+    Route::middleware('role:admin,cashier')->group(function () {
+        // 1. Terminal POS & Transaksi Kasir
         Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
         Route::post('/pos/order', [PosController::class, 'storeOrder'])->name('pos.order');
 
-        // Bill Aktif
+        // 3. Bill Aktif & Pelunasan
         Route::get('/bills', [ActiveBillsController::class, 'index'])->name('bills.index');
         Route::post('/bills/{order}/pay', [ActiveBillsController::class, 'payBill'])->name('bills.pay');
 
-        // Daftar Produk / Menu (Lihat Katalog)
+        // 4. Daftar Produk & Manajemen Katalog
         Route::get('/menus', [MenuController::class, 'index'])->name('menus.index');
-
-        // Laporan, History & Settlement
-        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-    });
-
-    // ─── BAR / DAPUR (Barista) Routes ────────────────────────────────────
-    Route::middleware('role:barista,admin')->group(function () {
-        Route::get('/kitchen', [KitchenController::class, 'index'])->name('kitchen.index');
-        Route::get('/kitchen/orders-json', [KitchenController::class, 'ordersJson'])->name('kitchen.orders-json');
-        Route::patch('/kitchen/{order}/status', [KitchenController::class, 'updateStatus'])->name('kitchen.update-status');
-    });
-
-    // ─── ADMIN Routes ─────────────────────────────────────────────────────
-    Route::middleware('role:admin')->group(function () {
-        // 1. Dashboard
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-        // Quick stock toggle from Dashboard "Menu Habis" widget
-        Route::post('/menus/{menu}/toggle', [MenuController::class, 'toggleAvailability'])->name('menus.toggle');
-
-        // 2. Daftar Menu (Kelola Katalog)
         Route::get('/menus/create', [MenuController::class, 'create'])->name('menus.create');
         Route::post('/menus', [MenuController::class, 'store'])->name('menus.store');
         Route::get('/menus/{menu}/edit', [MenuController::class, 'edit'])->name('menus.edit');
         Route::put('/menus/{menu}', [MenuController::class, 'update'])->name('menus.update');
         Route::delete('/menus/{menu}', [MenuController::class, 'destroy'])->name('menus.destroy');
+        Route::post('/menus/{menu}/toggle', [MenuController::class, 'toggleAvailability'])->name('menus.toggle');
 
-        // 4. Kategori Menu
+        // 5. Kategori Menu
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
         Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
-        // 5. Denah & Meja Kafe
+        // 6. Denah & Meja Kafe
         Route::get('/tables', [CafeTableController::class, 'index'])->name('tables.index');
         Route::post('/tables', [CafeTableController::class, 'store'])->name('tables.store');
         Route::put('/tables/{table}', [CafeTableController::class, 'update'])->name('tables.update');
         Route::delete('/tables/{table}', [CafeTableController::class, 'destroy'])->name('tables.destroy');
         Route::post('/tables/{table}/status', [CafeTableController::class, 'updateStatus'])->name('tables.update-status');
 
-        // 6. Kelola Karyawan & Role
+        // 7. Kelola Karyawan & Role
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
-        // 7. Voucher & Promo Diskon
+        // 8. Voucher & Promo Diskon
         Route::get('/vouchers', [VoucherController::class, 'index'])->name('vouchers.index');
         Route::post('/vouchers', [VoucherController::class, 'store'])->name('vouchers.store');
         Route::put('/vouchers/{voucher}', [VoucherController::class, 'update'])->name('vouchers.update');
         Route::post('/vouchers/{voucher}/toggle', [VoucherController::class, 'toggle'])->name('vouchers.toggle');
         Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('vouchers.destroy');
 
-        // 8. Pengaturan Kafe & Profil
+        // 9. Laporan Penjualan, History & Settlement
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+        // 10. Pengaturan Kafe & Profil
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings/store', [SettingController::class, 'updateStore'])->name('settings.store');
         Route::post('/settings/profile', [SettingController::class, 'updateProfile'])->name('settings.profile');
+    });
+
+    // ─── BAR / DAPUR (Barista, Admin, Cashier) Routes ────────────────────
+    Route::middleware('role:barista,admin,cashier')->group(function () {
+        Route::get('/kitchen', [KitchenController::class, 'index'])->name('kitchen.index');
+        Route::get('/kitchen/orders-json', [KitchenController::class, 'ordersJson'])->name('kitchen.orders-json');
+        Route::patch('/kitchen/{order}/status', [KitchenController::class, 'updateStatus'])->name('kitchen.update-status');
     });
 });

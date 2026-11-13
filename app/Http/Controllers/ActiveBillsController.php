@@ -66,7 +66,7 @@ class ActiveBillsController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Tagihan order #' . $order->order_number . ' telah berhasil dilunasi!',
+            'message' => 'Tagihan order #'.$order->order_number.' telah berhasil dilunasi!',
         ]);
     }
 }

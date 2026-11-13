@@ -47,7 +47,7 @@ class VoucherController extends Controller
     public function update(Request $request, Voucher $voucher): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => ['required', 'string', 'max:50', 'unique:vouchers,code,' . $voucher->id],
+            'code' => ['required', 'string', 'max:50', 'unique:vouchers,code,'.$voucher->id],
             'discount_type' => ['required', 'in:fixed,percentage'],
             'discount_value' => ['required', 'numeric', 'min:1'],
             'min_order_amount' => ['nullable', 'numeric', 'min:0'],
@@ -67,7 +67,7 @@ class VoucherController extends Controller
 
     public function toggle(Voucher $voucher): JsonResponse
     {
-        $voucher->update(['is_active' => !$voucher->is_active]);
+        $voucher->update(['is_active' => ! $voucher->is_active]);
 
         return response()->json([
             'success' => true,
@@ -79,6 +79,7 @@ class VoucherController extends Controller
     public function destroy(Voucher $voucher): RedirectResponse
     {
         $voucher->delete();
+
         return redirect()->route('vouchers.index')->with('success', 'Voucher promo berhasil dihapus!');
     }
 }

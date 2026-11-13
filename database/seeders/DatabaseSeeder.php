@@ -9,7 +9,6 @@ use App\Models\MenuVariant;
 use App\Models\MenuVariantOption;
 use App\Models\Order;
 use App\Models\OrderDetail;
-use App\Models\OrderDetailVariant;
 use App\Models\Setting;
 use App\Models\User;
 use App\Models\Voucher;
@@ -24,44 +23,44 @@ class DatabaseSeeder extends Seeder
         $admin = User::firstOrCreate(
             ['username' => 'admin'],
             [
-                'name'     => "Manager d'nale",
-                'email'    => 'admin@dnalecaffe.com',
+                'name' => "Manager d'nale",
+                'email' => 'admin@dnalecaffe.com',
                 'password' => Hash::make('password'),
-                'role'     => 'admin',
-                'phone'    => '081234567890',
+                'role' => 'admin',
+                'phone' => '081234567890',
             ]
         );
 
         $cashier = User::firstOrCreate(
             ['username' => 'kasir'],
             [
-                'name'     => 'Siti Kasir',
-                'email'    => 'kasir@dnalecaffe.com',
+                'name' => 'Siti Kasir',
+                'email' => 'kasir@dnalecaffe.com',
                 'password' => Hash::make('password'),
-                'role'     => 'cashier',
-                'phone'    => '081234567891',
+                'role' => 'cashier',
+                'phone' => '081234567891',
             ]
         );
 
         User::firstOrCreate(
             ['username' => 'barista'],
             [
-                'name'     => 'Rian Barista',
-                'email'    => 'barista@dnalecaffe.com',
+                'name' => 'Rian Barista',
+                'email' => 'barista@dnalecaffe.com',
                 'password' => Hash::make('password'),
-                'role'     => 'barista',
-                'phone'    => '081234567892',
+                'role' => 'barista',
+                'phone' => '081234567892',
             ]
         );
 
         // ── 2. SETTINGS ───────────────────────────────────────────────────
         $settings = [
-            'store_name'      => "d'nale caffe",
-            'store_tagline'   => 'Artisan Coffee & Good Vibes',
-            'store_address'   => 'Jl. Boulevard Kopi No. 8, Jakarta Selatan',
-            'store_phone'     => '+62 812-3456-7890',
-            'tax_percentage'  => '10',
-            'service_charge'  => '0',
+            'store_name' => "d'nale caffe",
+            'store_tagline' => 'Artisan Coffee & Good Vibes',
+            'store_address' => 'Jl. Boulevard Kopi No. 8, Jakarta Selatan',
+            'store_phone' => '+62 812-3456-7890',
+            'tax_percentage' => '10',
+            'service_charge' => '0',
             'currency_symbol' => 'Rp',
         ];
         foreach ($settings as $key => $val) {
@@ -94,11 +93,11 @@ class DatabaseSeeder extends Seeder
         }
 
         // ── 5. CATEGORIES — 5 kategori standar ───────────────────────────
-        $catCoffee     = Category::firstOrCreate(['slug' => 'coffee'],      ['name' => 'Coffee']);
-        $catNonCoffee  = Category::firstOrCreate(['slug' => 'non-coffee'],  ['name' => 'Non Coffee']);
-        $catDessert    = Category::firstOrCreate(['slug' => 'dessert'],     ['name' => 'Dessert']);
+        $catCoffee = Category::firstOrCreate(['slug' => 'coffee'], ['name' => 'Coffee']);
+        $catNonCoffee = Category::firstOrCreate(['slug' => 'non-coffee'], ['name' => 'Non Coffee']);
+        $catDessert = Category::firstOrCreate(['slug' => 'dessert'], ['name' => 'Dessert']);
         $catMainCourse = Category::firstOrCreate(['slug' => 'main-course'], ['name' => 'Main Course']);
-        $catSnacks     = Category::firstOrCreate(['slug' => 'snacks'],      ['name' => 'Snacks']);
+        $catSnacks = Category::firstOrCreate(['slug' => 'snacks'], ['name' => 'Snacks']);
 
         // ── 6. MENUS ──────────────────────────────────────────────────────
         // Varian standar untuk semua minuman kopi
@@ -125,10 +124,10 @@ class DatabaseSeeder extends Seeder
             $menu = Menu::firstOrCreate(
                 ['name' => $name],
                 [
-                    'category_id'  => $category->id,
-                    'description'  => $description,
-                    'price'        => $price,
-                    'image'        => null,
+                    'category_id' => $category->id,
+                    'description' => $description,
+                    'price' => $price,
+                    'image' => null,
                     'is_available' => $isAvailable,
                 ]
             );
@@ -141,7 +140,7 @@ class DatabaseSeeder extends Seeder
             foreach ($variants as $vDef) {
                 $variant = MenuVariant::firstOrCreate([
                     'menu_id' => $menu->id,
-                    'name'    => $vDef['name'],
+                    'name' => $vDef['name'],
                 ]);
 
                 foreach ($vDef['options'] as [$optName, $optPrice]) {
@@ -327,17 +326,17 @@ class DatabaseSeeder extends Seeder
         $order1 = Order::firstOrCreate(
             ['order_number' => 'DNC-20261005-0001'],
             [
-                'user_id'        => $cashier->id,
-                'cafe_table_id'  => $table2?->id,
-                'voucher_id'     => null,
-                'order_type'     => 'dine_in',
-                'subtotal'       => 76000.00,
-                'discount_amount'=> 0.00,
-                'total_amount'   => 76000.00,
+                'user_id' => $cashier->id,
+                'cafe_table_id' => $table2?->id,
+                'voucher_id' => null,
+                'order_type' => 'dine_in',
+                'subtotal' => 76000.00,
+                'discount_amount' => 0.00,
+                'total_amount' => 76000.00,
                 'payment_method' => 'qris',
                 'payment_status' => 'paid',
                 'kitchen_status' => 'served',
-                'created_at'     => now()->subHours(2),
+                'created_at' => now()->subHours(2),
             ]
         );
         OrderDetail::firstOrCreate(
@@ -356,17 +355,17 @@ class DatabaseSeeder extends Seeder
         $order2 = Order::firstOrCreate(
             ['order_number' => 'DNC-20261005-0002'],
             [
-                'user_id'        => $cashier->id,
-                'cafe_table_id'  => $table7?->id,
-                'voucher_id'     => null,
-                'order_type'     => 'dine_in',
-                'subtotal'       => 105000.00,
-                'discount_amount'=> 10000.00,
-                'total_amount'   => 95000.00,
+                'user_id' => $cashier->id,
+                'cafe_table_id' => $table7?->id,
+                'voucher_id' => null,
+                'order_type' => 'dine_in',
+                'subtotal' => 105000.00,
+                'discount_amount' => 10000.00,
+                'total_amount' => 95000.00,
                 'payment_method' => 'cash',
                 'payment_status' => 'paid',
                 'kitchen_status' => 'cooking',
-                'created_at'     => now()->subMinutes(30),
+                'created_at' => now()->subMinutes(30),
             ]
         );
         OrderDetail::firstOrCreate(
@@ -389,17 +388,17 @@ class DatabaseSeeder extends Seeder
         $order3 = Order::firstOrCreate(
             ['order_number' => 'DNC-20261005-0003'],
             [
-                'user_id'        => $cashier->id,
-                'cafe_table_id'  => null,
-                'voucher_id'     => null,
-                'order_type'     => 'take_away',
-                'subtotal'       => 48000.00,
-                'discount_amount'=> 0.00,
-                'total_amount'   => 48000.00,
+                'user_id' => $cashier->id,
+                'cafe_table_id' => null,
+                'voucher_id' => null,
+                'order_type' => 'take_away',
+                'subtotal' => 48000.00,
+                'discount_amount' => 0.00,
+                'total_amount' => 48000.00,
                 'payment_method' => 'qris',
                 'payment_status' => 'paid',
                 'kitchen_status' => 'pending',
-                'created_at'     => now()->subMinutes(10),
+                'created_at' => now()->subMinutes(10),
             ]
         );
         OrderDetail::firstOrCreate(

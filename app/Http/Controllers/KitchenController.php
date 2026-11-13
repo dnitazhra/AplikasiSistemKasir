@@ -96,7 +96,7 @@ class KitchenController extends Controller
                 ->whereIn('kitchen_status', ['pending', 'cooking', 'ready'])
                 ->exists();
 
-            if (!$otherActiveOrders) {
+            if (! $otherActiveOrders) {
                 $table = CafeTable::find($order->cafe_table_id);
                 if ($table && $table->status === 'occupied') {
                     $table->update(['status' => 'available']);
@@ -106,7 +106,7 @@ class KitchenController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Status pesanan berhasil diubah menjadi ' . ucfirst($validated['kitchen_status']),
+            'message' => 'Status pesanan berhasil diubah menjadi '.ucfirst($validated['kitchen_status']),
             'new_status' => $validated['kitchen_status'],
         ]);
     }

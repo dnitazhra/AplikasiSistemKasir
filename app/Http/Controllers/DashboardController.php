@@ -19,10 +19,10 @@ class DashboardController extends Controller
     public function index(Request $request): View
     {
         // Pastikan tabel database memiliki struktur kolom terbaru
-        if (!Schema::hasTable('orders') || !Schema::hasColumn('orders', 'payment_status')) {
+        if (! Schema::hasTable('orders') || ! Schema::hasColumn('orders', 'payment_status')) {
             $currentUser = Auth::user();
             Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
-            
+
             $admin = User::where('role', 'admin')->first() ?? $currentUser;
             if ($admin) {
                 Auth::login($admin);
@@ -61,10 +61,10 @@ class DashboardController extends Controller
 
         // 4. MENU TERLARIS
         $menuTerlaris = OrderDetail::select(
-                'menu_id',
-                DB::raw('SUM(quantity) as total_sold'),
-                DB::raw('SUM(subtotal) as total_revenue')
-            )
+            'menu_id',
+            DB::raw('SUM(quantity) as total_sold'),
+            DB::raw('SUM(subtotal) as total_revenue')
+        )
             ->with('menu.category')
             ->groupBy('menu_id')
             ->orderByDesc('total_sold')

@@ -202,6 +202,11 @@
                         </option>
                     @endforeach
                 </select>
+                <a href="{{ route('tables.index') }}" 
+                   title="Lihat Denah & Status Meja" 
+                   class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#FAF6F0] hover:bg-[#3D231D] text-[#C88A42] hover:text-white border border-[#EADBCE] transition-all shadow-2xs shrink-0 cursor-pointer">
+                    <i class="fa-solid fa-table-cells-large text-xs"></i>
+                </a>
             </div>
         </div>
 

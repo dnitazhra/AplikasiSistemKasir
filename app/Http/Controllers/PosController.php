@@ -67,7 +67,7 @@ class PosController extends Controller
                 $unitPrice = (float) $menu->price;
                 $variantsTotal = 0.00;
 
-                if (!empty($itemData['variants'])) {
+                if (! empty($itemData['variants'])) {
                     foreach ($itemData['variants'] as $v) {
                         $variantsTotal += (float) ($v['additional_price'] ?? 0);
                     }
@@ -118,7 +118,7 @@ class PosController extends Controller
                     'notes' => $proc['notes'],
                 ]);
 
-                if (!empty($proc['variants'])) {
+                if (! empty($proc['variants'])) {
                     foreach ($proc['variants'] as $variant) {
                         OrderDetailVariant::create([
                             'order_detail_id' => $detail->id,
@@ -130,7 +130,7 @@ class PosController extends Controller
             }
 
             // Update table status if dine_in
-            if ($validated['order_type'] === 'dine_in' && !empty($validated['cafe_table_id'])) {
+            if ($validated['order_type'] === 'dine_in' && ! empty($validated['cafe_table_id'])) {
                 $table = CafeTable::find($validated['cafe_table_id']);
                 if ($table) {
                     $table->update(['status' => 'occupied']);
@@ -156,22 +156,22 @@ class PosController extends Controller
                     'order_type' => $order->order_type === 'dine_in' ? 'Dine In' : 'Take Away',
                     'table_number' => $order->cafeTable ? $order->cafeTable->table_number : '-',
                     'subtotal' => $order->subtotal,
-                    'formatted_subtotal' => 'Rp ' . number_format($order->subtotal, 0, ',', '.'),
+                    'formatted_subtotal' => 'Rp '.number_format($order->subtotal, 0, ',', '.'),
                     'total_amount' => $order->total_amount,
-                    'formatted_total' => 'Rp ' . number_format($order->total_amount, 0, ',', '.'),
+                    'formatted_total' => 'Rp '.number_format($order->total_amount, 0, ',', '.'),
                     'payment_method' => strtoupper($order->payment_method),
                     'payment_status' => strtoupper($order->payment_status),
                     'cash_given' => $cashGiven > 0 ? $cashGiven : null,
-                    'formatted_cash_given' => $cashGiven > 0 ? 'Rp ' . number_format($cashGiven, 0, ',', '.') : null,
+                    'formatted_cash_given' => $cashGiven > 0 ? 'Rp '.number_format($cashGiven, 0, ',', '.') : null,
                     'change' => $cashGiven > 0 ? $change : null,
-                    'formatted_change' => $cashGiven > 0 ? 'Rp ' . number_format($change, 0, ',', '.') : null,
+                    'formatted_change' => $cashGiven > 0 ? 'Rp '.number_format($change, 0, ',', '.') : null,
                     'items' => $order->orderDetails->map(function ($d) {
                         return [
                             'name' => $d->menu->name,
                             'quantity' => $d->quantity,
                             'unit_price' => $d->unit_price,
                             'subtotal' => $d->subtotal,
-                            'formatted_subtotal' => 'Rp ' . number_format($d->subtotal, 0, ',', '.'),
+                            'formatted_subtotal' => 'Rp '.number_format($d->subtotal, 0, ',', '.'),
                             'notes' => $d->notes,
                             'variants' => $d->variants->pluck('variant_option_name')->toArray(),
                         ];
@@ -180,11 +180,11 @@ class PosController extends Controller
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal memproses transaksi: ' . $e->getMessage(),
+                'message' => 'Gagal memproses transaksi: '.$e->getMessage(),
             ], 500);
         }
     }
 }
-

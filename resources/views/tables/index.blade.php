@@ -16,13 +16,15 @@
             <span>Muat Ulang</span>
         </button>
 
-        {{-- Tombol Tambah Meja Baru --}}
+        {{-- Tombol Tambah Meja Baru (Hanya Admin) --}}
+        @if(auth()->user()?->role === 'admin')
         <button type="button"
                 onclick="document.getElementById('modal-add-table').classList.remove('hidden')"
                 class="inline-flex items-center gap-2 bg-[#3D231D] hover:bg-[#2A1713] text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200 active:scale-95 cursor-pointer">
             <i class="fa-solid fa-plus text-xs"></i>
             <span>Tambah Meja</span>
         </button>
+        @endif
     </div>
 @endsection
 
@@ -207,24 +209,35 @@
                             @endif
 
                             {{-- Switch Cepat Status Meja --}}
-                            <div class="mt-3 pt-2.5 border-t border-[#F5EDE3]">
-                                <span class="block text-[10px] text-[#8A7A75] font-semibold mb-1.5">Ubah Status Cepat:</span>
-                                <div class="grid grid-cols-3 gap-1">
+                            <div class="mt-3 pt-2.5 border-t border-[#F5EDE3] space-y-2">
+                                @if($table->status === 'occupied')
                                     <button type="button" 
-                                            onclick="changeTableStatus({{ $table->id }}, 'available')" 
-                                            class="py-1 px-1.5 rounded-lg text-[10px] font-bold text-center transition-colors cursor-pointer {{ $table->status === 'available' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}">
-                                        Kosong
+                                            onclick="changeTableStatus({{ $table->id }}, 'available')"
+                                            class="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs hover:shadow active:scale-95 cursor-pointer">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        <span>Tandai Sudah Kosong (Tersedia)</span>
                                     </button>
-                                    <button type="button" 
-                                            onclick="changeTableStatus({{ $table->id }}, 'occupied')" 
-                                            class="py-1 px-1.5 rounded-lg text-[10px] font-bold text-center transition-colors cursor-pointer {{ $table->status === 'occupied' ? 'bg-amber-600 text-white shadow-xs' : 'bg-amber-50 text-amber-700 hover:bg-amber-100' }}">
-                                        Terisi
-                                    </button>
-                                    <button type="button" 
-                                            onclick="changeTableStatus({{ $table->id }}, 'reserved')" 
-                                            class="py-1 px-1.5 rounded-lg text-[10px] font-bold text-center transition-colors cursor-pointer {{ $table->status === 'reserved' ? 'bg-slate-700 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
-                                        Reservasi
-                                    </button>
+                                @endif
+
+                                <div>
+                                    <span class="block text-[10px] text-[#8A7A75] font-semibold mb-1.5">Ubah Status Cepat:</span>
+                                    <div class="grid grid-cols-3 gap-1">
+                                        <button type="button" 
+                                                onclick="changeTableStatus({{ $table->id }}, 'available')" 
+                                                class="py-1 px-1.5 rounded-lg text-[10px] font-bold text-center transition-colors cursor-pointer {{ $table->status === 'available' ? 'bg-emerald-600 text-white shadow-xs' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}">
+                                            Kosong
+                                        </button>
+                                        <button type="button" 
+                                                onclick="changeTableStatus({{ $table->id }}, 'occupied')" 
+                                                class="py-1 px-1.5 rounded-lg text-[10px] font-bold text-center transition-colors cursor-pointer {{ $table->status === 'occupied' ? 'bg-amber-600 text-white shadow-xs' : 'bg-amber-50 text-amber-700 hover:bg-amber-100' }}">
+                                            Terisi
+                                        </button>
+                                        <button type="button" 
+                                                onclick="changeTableStatus({{ $table->id }}, 'reserved')" 
+                                                class="py-1 px-1.5 rounded-lg text-[10px] font-bold text-center transition-colors cursor-pointer {{ $table->status === 'reserved' ? 'bg-slate-700 text-white shadow-xs' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
+                                            Reservasi
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -239,7 +252,8 @@
                                 <span>Ubah</span>
                             </button>
 
-                            {{-- Tombol Hapus (teks merah) --}}
+                            {{-- Tombol Hapus (teks merah) - Khusus Admin --}}
+                            @if(auth()->user()?->role === 'admin')
                             <form action="{{ route('tables.destroy', $table) }}" method="POST" onsubmit="return confirm('Hapus {{ addslashes($table->table_number) }}? Tindakan ini tidak dapat dibatalkan.')">
                                 @csrf
                                 @method('DELETE')
@@ -249,6 +263,7 @@
                                     <span>Hapus</span>
                                 </button>
                             </form>
+                            @endif
                         </div>
 
                     </div>

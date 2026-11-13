@@ -56,18 +56,19 @@ class Order extends Model
 
     public function getFormattedTotalAttribute(): string
     {
-        return 'Rp ' . number_format($this->total_amount, 0, ',', '.');
+        return 'Rp '.number_format($this->total_amount, 0, ',', '.');
     }
 
     public function getFormattedSubtotalAttribute(): string
     {
-        return 'Rp ' . number_format($this->subtotal, 0, ',', '.');
+        return 'Rp '.number_format($this->subtotal, 0, ',', '.');
     }
 
     public static function generateOrderNumber(): string
     {
         $date = date('Ymd');
         $todayCount = static::whereDate('created_at', today())->count() + 1;
-        return 'DNC-' . $date . '-' . str_pad($todayCount, 4, '0', STR_PAD_LEFT);
+
+        return 'DNC-'.$date.'-'.str_pad($todayCount, 4, '0', STR_PAD_LEFT);
     }
 }

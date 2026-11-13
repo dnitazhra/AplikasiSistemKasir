@@ -126,7 +126,7 @@
                     $activeBillsCount = \App\Models\Order::where('payment_status', 'pending')->count();
                 @endphp
 
-                {{-- ─── KASIR: Navigasi Lengkap Kasir ─── --}}
+                {{-- ─── KASIR: Navigasi Lengkap Kasir (Tetap Sama Seperti Kemarin, Tanpa Dashboard) ─── --}}
                 @if($userRole === 'cashier')
                     <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Navigasi Utama</p>
                     <div class="space-y-1 mb-4">
@@ -137,21 +137,28 @@
                             <span>Terminal Kasir</span>
                         </a>
 
-                        {{-- 2. Daftar Produk --}}
+                        {{-- 2. Denah & Status Meja --}}
+                        <a href="{{ route('tables.index') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('tables.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-table-cells-large text-base w-5 text-center {{ request()->routeIs('tables.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Denah &amp; Status Meja</span>
+                        </a>
+
+                        {{-- 3. Daftar Produk --}}
                         <a href="{{ route('menus.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('menus.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
                             <i class="fa-solid fa-boxes-stacked text-base w-5 text-center {{ request()->routeIs('menus.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                             <span>Daftar Produk</span>
                         </a>
 
-                        {{-- 3. Order List --}}
+                        {{-- 4. Order List --}}
                         <a href="{{ route('kitchen.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
                             <i class="fa-solid fa-clipboard-list text-base w-5 text-center {{ request()->routeIs('kitchen.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                             <span>Order List</span>
                         </a>
 
-                        {{-- 4. Bills / Bill Aktif (dengan badge notifikasi) --}}
+                        {{-- 5. Bills / Bill Aktif (dengan badge notifikasi) --}}
                         <a href="{{ route('bills.index') }}"
                            class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('bills.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
                             <div class="flex items-center gap-3.5">
@@ -165,21 +172,21 @@
                             @endif
                         </a>
 
-                        {{-- 5. History --}}
+                        {{-- 6. History --}}
                         <a href="{{ route('reports.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white">
                             <i class="fa-solid fa-clock-rotate-left text-base w-5 text-center text-[#D9A05B]"></i>
                             <span>History</span>
                         </a>
 
-                        {{-- 6. Settlement --}}
+                        {{-- 7. Settlement --}}
                         <a href="{{ route('reports.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white">
                             <i class="fa-solid fa-hand-holding-dollar text-base w-5 text-center text-[#D9A05B]"></i>
                             <span>Settlement</span>
                         </a>
 
-                        {{-- 7. Report --}}
+                        {{-- 8. Report --}}
                         <a href="{{ route('reports.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
                             <i class="fa-solid fa-chart-line text-base w-5 text-center {{ request()->routeIs('reports.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
@@ -190,7 +197,7 @@
 
                 {{-- ─── BARISTA: Hanya tampil untuk barista ─── --}}
                 @if($userRole === 'barista')
-                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Dapur & Bar</p>
+                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Dapur &amp; Bar</p>
                     <div class="space-y-1 mb-4">
                         <a href="{{ route('kitchen.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
@@ -200,7 +207,7 @@
                     </div>
                 @endif
 
-                {{-- ─── ADMIN: Menu lengkap untuk admin ─── --}}
+                {{-- ─── ADMIN: Menu lengkap untuk admin (Termasuk Dashboard) ─── --}}
                 @if($userRole === 'admin')
                     <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Menu Utama</p>
                     <div class="space-y-1 mb-4">
@@ -346,8 +353,8 @@
                             <span id="realtime-clock">{{ now()->translatedFormat('l, d M Y') }} • {{ now()->format('H:i') }} WIB</span>
                         </div>
 
-                        <!-- Quick POS Shortcut (hanya admin) -->
-                        @if(auth()->user()?->role === 'admin')
+                        <!-- Quick POS Shortcut (Admin & Kasir) -->
+                        @if(in_array(auth()->user()?->role, ['admin', 'cashier']))
                             <a href="{{ route('pos.index') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#D9A05B] to-[#C88A42] hover:brightness-105 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200">
                                 <i class="fa-solid fa-plus-circle"></i>
                                 <span>Order Baru</span>

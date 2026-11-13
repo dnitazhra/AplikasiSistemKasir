@@ -13,6 +13,7 @@ class CategoryController extends Controller
     public function index(): View
     {
         $categories = Category::withCount('menus')->orderBy('name')->get();
+
         return view('categories.index', compact('categories'));
     }
 
@@ -33,7 +34,7 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:categories,name,' . $category->id],
+            'name' => ['required', 'string', 'max:255', 'unique:categories,name,'.$category->id],
         ]);
 
         $category->update([
@@ -47,6 +48,7 @@ class CategoryController extends Controller
     public function destroy(Category $category): RedirectResponse
     {
         $category->delete();
+
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus!');
     }
 }
