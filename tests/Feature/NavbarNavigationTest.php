@@ -52,9 +52,20 @@ class NavbarNavigationTest extends TestCase
             $response->assertStatus(200);
         }
 
-        // Pastikan menu Voucher & Promo tidak ada di navbar
+        // Pastikan menu Voucher & Promo tidak ada di navbar admin
         $dashboardResponse = $this->actingAs($user)->get(route('dashboard'));
         $dashboardResponse->assertDontSee('Voucher &amp; Promo', false);
+
+        // Pastikan kartu Omzet Bulan Ini, Omzet Hari Ini, dan Transaksi Hari Ini tampil di dashboard
+        $dashboardResponse->assertSee('Omzet Hari Ini');
+        $dashboardResponse->assertSee('Transaksi Hari Ini');
+        $dashboardResponse->assertSee('Omzet Bulan Ini');
+
+        // Pastikan menu History, Settlement, Terminal Kasir, dan Bills tidak muncul di sidebar admin
+        $dashboardResponse->assertDontSee('<span>Terminal Kasir</span>', false);
+        $dashboardResponse->assertDontSee('<span>Bills / Bill Aktif</span>', false);
+        $dashboardResponse->assertDontSee('<span>Riwayat Transaksi (History)</span>', false);
+        $dashboardResponse->assertDontSee('<span>Tutup Kasir (Settlement)</span>', false);
 
         // Pastikan pada halaman laporan penjualan (Report/Laporan Penjualan) tidak ada bagian Potongan Promo
         $reportsResponse = $this->actingAs($user)->get(route('reports.index'));
@@ -90,10 +101,14 @@ class NavbarNavigationTest extends TestCase
         $dashboardResponse = $this->actingAs($cashier)->get(route('dashboard'));
         $dashboardResponse->assertRedirect(route('pos.index'));
 
-        // Di halaman kasir (POS), menu Dashboard tidak boleh muncul
+        // Di halaman kasir (POS), menu Dashboard tidak boleh muncul, tetapi menu kasir tetap muncul
         $posResponse = $this->actingAs($cashier)->get(route('pos.index'));
         $posResponse->assertStatus(200);
         $posResponse->assertDontSee('<span>Dashboard</span>', false);
+        $posResponse->assertSee('<span>Terminal Kasir</span>', false);
+        $posResponse->assertSee('<span>Bills / Bill Aktif</span>', false);
+        $posResponse->assertSee('<span>History</span>', false);
+        $posResponse->assertSee('<span>Settlement</span>', false);
 
         // Halaman operasional kasir tetap dapat diakses
         $cashierRoutes = [

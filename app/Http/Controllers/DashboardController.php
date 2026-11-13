@@ -52,14 +52,36 @@ class DashboardController extends Controller
             ->where('order_type', 'take_away')
             ->count();
 
-        // 3. STATUS MEJA
+        // 3. OMZET BULAN INI & RINGKASAN PENJUALAN BULANAN
+        $startOfMonth = now()->startOfMonth();
+        $endOfMonth = now()->endOfMonth();
+
+        $monthOrdersQuery = Order::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->where('payment_status', 'paid');
+
+        $omzetBulanIni = (clone $monthOrdersQuery)->sum('total_amount');
+        $transaksiBulanIniCount = (clone $monthOrdersQuery)->count();
+
+        // Perbandingan omzet dengan bulan lalu
+        $startOfLastMonth = now()->subMonth()->startOfMonth();
+        $endOfLastMonth = now()->subMonth()->endOfMonth();
+        $omzetBulanLalu = Order::whereBetween('created_at', [$startOfLastMonth, $endOfLastMonth])
+            ->where('payment_status', 'paid')
+            ->sum('total_amount');
+
+        $pertumbuhanOmzet = null;
+        if ($omzetBulanLalu > 0) {
+            $pertumbuhanOmzet = round((($omzetBulanIni - $omzetBulanLalu) / $omzetBulanLalu) * 100, 1);
+        }
+
+        // 4. STATUS MEJA
         $totalMeja = CafeTable::count();
         $mejaTersedia = CafeTable::where('status', 'available')->count();
         $mejaTerisi = CafeTable::where('status', 'occupied')->count();
         $mejaDipesan = CafeTable::where('status', 'reserved')->count();
         $cafeTables = CafeTable::orderBy('table_number')->get();
 
-        // 4. MENU TERLARIS
+        // 5. MENU TERLARIS
         $menuTerlaris = OrderDetail::select(
             'menu_id',
             DB::raw('SUM(quantity) as total_sold'),
@@ -71,7 +93,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // 5. MENU HABIS (Out of stock)
+        // 6. MENU HABIS (Out of stock)
         $menuHabis = Menu::with('category')
             ->where('is_available', false)
             ->orderBy('name')
@@ -83,6 +105,10 @@ class DashboardController extends Controller
             'totalTransaksi',
             'totalDineIn',
             'totalTakeAway',
+            'omzetBulanIni',
+            'transaksiBulanIniCount',
+            'omzetBulanLalu',
+            'pertumbuhanOmzet',
             'totalMeja',
             'mejaTersedia',
             'mejaTerisi',

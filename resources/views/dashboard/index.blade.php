@@ -25,9 +25,9 @@
 <div class="space-y-6">
 
     <!-- ============================================================ -->
-    <!-- BARIS 1: 1. OMZET HARI INI & 2. TRANSAKSI HARI INI (GRID 2) -->
+    <!-- BARIS 1: OMZET HARI INI, TRANSAKSI HARI INI, OMZET BULAN INI  -->
     <!-- ============================================================ -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         
         <!-- 1. OMZET HARI INI -->
         <div class="bg-white rounded-2xl p-6 border border-[#EADBCE] shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
@@ -77,16 +77,49 @@
                 </span>
             </div>
         </div>
+
+        <!-- 3. OMZET BULAN INI -->
+        <div class="bg-white rounded-2xl p-6 border border-[#EADBCE] shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-[#8A7A75] uppercase tracking-wider block">3. Omzet Bulan Ini</span>
+                    <h3 class="text-3xl font-extrabold text-[#3D231D] tracking-tight mt-2">
+                        Rp {{ number_format($omzetBulanIni, 0, ',', '.') }}
+                    </h3>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fa-solid fa-money-bill-trend-up"></i>
+                </div>
+            </div>
+
+            <!-- Sub-keterangan: Ringkasan penjualan bulanan & perbandingan -->
+            <div class="mt-4 pt-4 border-t border-[#EADBCE]/60 flex items-center justify-between gap-2 text-xs">
+                <div class="flex items-center gap-1.5 text-[#8A7A75] font-medium truncate">
+                    <i class="fa-solid fa-calendar-check text-emerald-500"></i>
+                    <span><strong>{{ $transaksiBulanIniCount }}</strong> transaksi • {{ now()->translatedFormat('F Y') }}</span>
+                </div>
+                @if($pertumbuhanOmzet !== null)
+                    <span class="inline-flex items-center gap-1 font-bold px-2 py-0.5 rounded-full text-[10px] {{ $pertumbuhanOmzet >= 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200' }}" title="Perbandingan dengan bulan sebelumnya">
+                        <i class="fa-solid {{ $pertumbuhanOmzet >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down' }}"></i>
+                        <span>{{ $pertumbuhanOmzet >= 0 ? '+' : '' }}{{ $pertumbuhanOmzet }}% vs bln lalu</span>
+                    </span>
+                @else
+                    <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        Bulan Berjalan
+                    </span>
+                @endif
+            </div>
+        </div>
     </div>
 
     <!-- ============================================================ -->
-    <!-- BARIS 2: 3. STATUS MEJA (RINGKASAN & DENAH CEPAT)           -->
+    <!-- BARIS 2: 4. STATUS MEJA (RINGKASAN & DENAH CEPAT)           -->
     <!-- ============================================================ -->
     <div class="bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#EADBCE]">
             <div>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-[#8A7A75] uppercase tracking-wider">3. Status Meja</span>
+                    <span class="text-xs font-bold text-[#8A7A75] uppercase tracking-wider">4. Status Meja</span>
                 </div>
                 <h3 class="text-lg font-bold text-[#3D231D] mt-0.5 flex items-center gap-2">
                     <i class="fa-solid fa-chair text-[#C88A42]"></i>
@@ -142,16 +175,16 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- BARIS 3: 4. MENU TERLARIS & 5. MENU HABIS (GRID 2 SEIMBANG) -->
+    <!-- BARIS 3: 5. MENU TERLARIS & 6. MENU HABIS (GRID 2 SEIMBANG) -->
     <!-- ============================================================ -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <!-- 4. MENU TERLARIS -->
+        <!-- 5. MENU TERLARIS -->
         <div class="bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-6 flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between pb-4 border-b border-[#EADBCE]">
                     <div>
-                        <span class="text-xs font-bold text-[#8A7A75] uppercase tracking-wider block">4. Menu Terlaris</span>
+                        <span class="text-xs font-bold text-[#8A7A75] uppercase tracking-wider block">5. Menu Terlaris</span>
                         <h3 class="text-base font-bold text-[#3D231D] mt-0.5 flex items-center gap-2">
                             <i class="fa-solid fa-trophy text-[#C88A42]"></i>
                             <span>Paling Banyak Dipesan</span>
@@ -193,18 +226,18 @@
             </div>
 
             <div class="pt-4 border-t border-[#EADBCE] mt-4">
-                <a href="{{ route('pos.index') }}" class="w-full block py-2 text-center text-xs font-bold text-[#C88A42] hover:text-[#3D231D] transition-colors">
-                    Buka Terminal POS untuk Buat Pesanan &rarr;
+                <a href="{{ route('menus.index') }}" class="w-full block py-2 text-center text-xs font-bold text-[#C88A42] hover:text-[#3D231D] transition-colors">
+                    Lihat Seluruh Daftar Produk &rarr;
                 </a>
             </div>
         </div>
 
-        <!-- 5. MENU HABIS (OUT OF STOCK) -->
+        <!-- 6. MENU HABIS (OUT OF STOCK) -->
         <div class="bg-white rounded-2xl border border-[#EADBCE] shadow-sm p-6 flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between pb-4 border-b border-[#EADBCE]">
                     <div>
-                        <span class="text-xs font-bold text-[#8A7A75] uppercase tracking-wider block">5. Menu Habis</span>
+                        <span class="text-xs font-bold text-[#8A7A75] uppercase tracking-wider block">6. Menu Habis</span>
                         <h3 class="text-base font-bold text-[#3D231D] mt-0.5 flex items-center gap-2">
                             <i class="fa-solid fa-circle-exclamation text-rose-500"></i>
                             <span>Stok Kosong (Out of Stock)</span>

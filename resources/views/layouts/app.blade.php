@@ -218,13 +218,8 @@
                         </a>
                     </div>
 
-                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Operasional Kasir</p>
+                    <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Pemantauan &amp; Laporan</p>
                     <div class="space-y-1 mb-4">
-                        <a href="{{ route('pos.index') }}"
-                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('pos.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                            <i class="fa-solid fa-cash-register text-base w-5 text-center {{ request()->routeIs('pos.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                            <span>Terminal Kasir</span>
-                        </a>
                         <a href="{{ route('menus.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('menus.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
                             <i class="fa-solid fa-boxes-stacked text-base w-5 text-center {{ request()->routeIs('menus.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
@@ -234,28 +229,6 @@
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
                             <i class="fa-solid fa-clipboard-list text-base w-5 text-center {{ request()->routeIs('kitchen.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                             <span>Order List</span>
-                        </a>
-                        <a href="{{ route('bills.index') }}"
-                           class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('bills.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                            <div class="flex items-center gap-3.5">
-                                <i class="fa-solid fa-file-invoice text-base w-5 text-center {{ request()->routeIs('bills.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                                <span>Bills / Bill Aktif</span>
-                            </div>
-                            @if($activeBillsCount > 0)
-                                <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-500 text-white shadow-xs">
-                                    {{ $activeBillsCount }}
-                                </span>
-                            @endif
-                        </a>
-                        <a href="{{ route('history.index') }}"
-                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('history.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                            <i class="fa-solid fa-clock-rotate-left text-base w-5 text-center {{ request()->routeIs('history.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                            <span>Riwayat Transaksi (History)</span>
-                        </a>
-                        <a href="{{ route('settlement.index') }}"
-                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('settlement.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                            <i class="fa-solid fa-hand-holding-dollar text-base w-5 text-center {{ request()->routeIs('settlement.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
-                            <span>Tutup Kasir (Settlement)</span>
                         </a>
                         <a href="{{ route('reports.index') }}"
                            class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('reports.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
