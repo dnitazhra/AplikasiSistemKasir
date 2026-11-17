@@ -44,62 +44,71 @@
 {{-- ══════════════════════════════════════════════════════ --}}
 {{-- SIDEBAR KIRI                                          --}}
 {{-- ══════════════════════════════════════════════════════ --}}
-<aside id="sidebar" class="w-64 h-screen bg-[#3D231D] flex flex-col flex-shrink-0 shadow-2xl">
+<aside id="sidebar" class="w-72 h-screen bg-[#3D231D] flex flex-col flex-shrink-0 shadow-2xl">
 
     {{-- ── Brand ── --}}
-    <div class="px-5 py-5 border-b border-[#4A2E2B]">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#C88A42] to-[#D9A05B] flex items-center justify-center shadow-md flex-shrink-0">
-                <i class="fa-solid fa-mug-hot text-white text-lg"></i>
+    <div class="p-6 border-b border-[#4A2E2B] flex-shrink-0">
+        <div class="flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#C88A42] to-[#D9A05B] flex items-center justify-center text-white shadow-lg flex-shrink-0">
+                <i class="fa-solid fa-mug-hot text-xl"></i>
             </div>
             <div>
-                <h1 class="text-base font-bold text-white leading-tight">d'nale <span class="text-[#D9A05B] font-light">caffe</span></h1>
+                <h1 class="text-xl font-bold tracking-tight text-white">
+                    d'nale <span class="text-[#D9A05B] font-light">caffe</span>
+                </h1>
                 <div class="flex items-center gap-1.5 mt-0.5">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span class="text-[10px] font-semibold tracking-widest uppercase text-[#D9A05B]/80">POS Kasir</span>
+                    <span class="text-xs text-[#D9A05B]/80 font-medium tracking-wider uppercase">POS Kasir</span>
                 </div>
             </div>
         </div>
     </div>
 
     {{-- ── Nav ── --}}
-    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-        <p class="px-3 text-[10px] font-bold tracking-widest uppercase text-[#D9A05B]/50 mb-2">Menu</p>
+    <nav class="p-4 flex-1 overflow-y-auto">
+        <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Menu</p>
+        <div class="space-y-1">
 
-        {{-- Daftar Produk (AKTIF) --}}
+        {{-- Daftar Produk --}}
         <a href="{{ route('kitchen.products') }}"
-           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold bg-[#D9A05B] text-white shadow-md transition-all">
-            <i class="fa-solid fa-book-open w-5 text-center text-white"></i>
+           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.products') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+            <i class="fa-solid fa-book-open text-base w-5 text-center {{ request()->routeIs('kitchen.products') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
             <span>Daftar Produk</span>
         </a>
 
         {{-- Order List --}}
         <a href="{{ route('kitchen.index') }}"
-           class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-[#FAF6F0]/75 hover:bg-[#4A2E2B] hover:text-white transition-all">
-            <i class="fa-solid fa-list-check w-5 text-center text-[#D9A05B]"></i>
+           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.index') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+            <i class="fa-solid fa-list-check text-base w-5 text-center {{ request()->routeIs('kitchen.index') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
             <span>Order List</span>
         </a>
+
+        </div>
     </nav>
 
     {{-- ── User Footer ── --}}
-    <div class="px-4 py-4 border-t border-[#4A2E2B] bg-[#2A1713]/60">
-        <div class="flex items-center gap-3 mb-3 px-1">
-            <div class="w-9 h-9 rounded-xl bg-[#D9A05B]/20 border border-[#D9A05B]/40 flex items-center justify-center text-[#D9A05B] font-black text-sm flex-shrink-0">
-                {{ strtoupper(substr(Auth::user()->name ?? 'B', 0, 1)) }}
-            </div>
-            <div class="min-w-0">
-                <p class="text-sm font-semibold text-white leading-tight truncate">{{ Auth::user()->name ?? 'Barista' }}</p>
-                <span class="text-[10px] font-semibold uppercase tracking-wider text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full inline-block mt-0.5">
-                    {{ ucfirst(Auth::user()->role ?? 'barista') }}
-                </span>
+    <div class="p-4 border-t border-[#4A2E2B] bg-[#2A1713]/80 flex-shrink-0">
+        <div class="flex items-center justify-between mb-3 px-2">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#C88A42] to-[#D9A05B] border border-[#D9A05B]/40 flex items-center justify-center text-white font-extrabold text-sm shadow-md flex-shrink-0">
+                    {{ strtoupper(substr(auth()->user()->name ?? 'B', 0, 1)) }}
+                </div>
+                <div class="min-w-0">
+                    <p class="text-sm font-bold text-white leading-tight truncate w-32" title="{{ auth()->user()->name ?? 'Barista' }}">
+                        {{ auth()->user()->name ?? 'Barista' }}
+                    </p>
+                    <span class="inline-block text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        {{ auth()->user()->role ?? 'barista' }}
+                    </span>
+                </div>
             </div>
         </div>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit"
-                    class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl text-rose-300 hover:text-white hover:bg-rose-600/80 transition-all">
+                    class="w-full flex items-center justify-center gap-2 px-3 py-2 text-xs font-bold rounded-xl text-white bg-rose-700/80 hover:bg-rose-600 transition-all duration-200 shadow-sm hover:shadow active:scale-95 cursor-pointer">
                 <i class="fa-solid fa-right-from-bracket"></i>
-                <span>Keluar / Logout</span>
+                <span>Logout dari Sistem</span>
             </button>
         </form>
     </div>
