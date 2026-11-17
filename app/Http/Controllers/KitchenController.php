@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\CafeTable;
+use App\Models\Category;
+use App\Models\Menu;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,6 +12,51 @@ use Illuminate\View\View;
 
 class KitchenController extends Controller
 {
+    public function products(Request $request): View
+    {
+        $search     = $request->query('search', '');
+        $categoryId = $request->query('category_id', '');
+        $available  = $request->query('available', '');
+
+        $query = Menu::with('category');
+
+        if ($search !== '') {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if ($categoryId !== '') {
+            $query->where('category_id', (int) $categoryId);
+        }
+
+        if ($available !== '') {
+            $query->where('is_available', $available === '1');
+        }
+
+        $menus      = $query->orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
+
+        $totalMenus     = Menu::count();
+        $totalAvailable = Menu::where('is_available', true)->count();
+        $totalHabis     = Menu::where('is_available', false)->count();
+
+        return view('kitchen.products', compact(
+            'menus', 'categories',
+            'totalMenus', 'totalAvailable', 'totalHabis',
+            'search', 'categoryId', 'available'
+        ));
+    }
+
+    public function toggleProduct(Menu $menu): JsonResponse
+    {
+        $menu->update(['is_available' => ! $menu->is_available]);
+
+        return response()->json([
+            'success'      => true,
+            'is_available' => $menu->is_available,
+            'message'      => $menu->is_available ? 'Menu diaktifkan (Tersedia)' : 'Menu ditandai Habis',
+        ]);
+    }
+
     public function index(Request $request): View
     {
         $statusFilter = $request->query('status', 'active');

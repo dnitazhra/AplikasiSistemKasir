@@ -200,9 +200,14 @@
                     <p class="px-3 py-1.5 text-[11px] font-semibold tracking-wider text-[#D9A05B]/70 uppercase mb-1">Dapur &amp; Bar</p>
                     <div class="space-y-1 mb-4">
                         <a href="{{ route('kitchen.index') }}"
-                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.*') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
-                            <i class="fa-solid fa-blender text-base w-5 text-center {{ request()->routeIs('kitchen.*') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.index') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-blender text-base w-5 text-center {{ request()->routeIs('kitchen.index') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
                             <span>Antrian Pesanan</span>
+                        </a>
+                        <a href="{{ route('kitchen.products') }}"
+                           class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 {{ request()->routeIs('kitchen.products') ? 'bg-[#D9A05B] text-white shadow-md font-semibold' : 'text-[#FAF6F0]/80 hover:bg-[#4A2E2B] hover:text-white' }}">
+                            <i class="fa-solid fa-book-open text-base w-5 text-center {{ request()->routeIs('kitchen.products') ? 'text-white' : 'text-[#D9A05B]' }}"></i>
+                            <span>Daftar Produk</span>
                         </a>
                     </div>
                 @endif

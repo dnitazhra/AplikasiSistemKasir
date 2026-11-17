@@ -109,5 +109,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/kitchen', [KitchenController::class, 'index'])->name('kitchen.index');
         Route::get('/kitchen/orders-json', [KitchenController::class, 'ordersJson'])->name('kitchen.orders-json');
         Route::patch('/kitchen/{order}/status', [KitchenController::class, 'updateStatus'])->name('kitchen.update-status');
+        Route::get('/kitchen/products', [KitchenController::class, 'products'])->name('kitchen.products');
+        Route::post('/kitchen/products/{menu}/toggle', [KitchenController::class, 'toggleProduct'])->name('kitchen.products.toggle');
     });
 });
