@@ -29,40 +29,41 @@ class AuthController extends Controller
                 Artisan::call('migrate', ['--force' => true]);
             }
 
-            // Daftarkan/reset password akun default agar selalu valid
-            $usersToEnsure = [
+            // Buat akun default HANYA jika belum ada — jangan overwrite data yang sudah diubah admin
+            $defaultAccounts = [
                 [
-                    'name' => 'Manager d\'nale',
+                    'name'     => "Manager d'nale",
                     'username' => 'admin',
-                    'email' => 'admin@dnalecaffe.com',
-                    'role' => 'admin',
-                    'phone' => '081234567890',
+                    'email'    => 'admin@dnalecaffe.com',
+                    'role'     => 'admin',
+                    'phone'    => '081234567890',
                 ],
                 [
-                    'name' => 'Siti Kasir',
+                    'name'     => 'Siti Kasir',
                     'username' => 'kasir',
-                    'email' => 'kasir@dnalecaffe.com',
-                    'role' => 'cashier',
-                    'phone' => '081234567891',
+                    'email'    => 'kasir@dnalecaffe.com',
+                    'role'     => 'cashier',
+                    'phone'    => '081234567891',
                 ],
                 [
-                    'name' => 'Rian Barista',
+                    'name'     => 'Rian Barista',
                     'username' => 'barista',
-                    'email' => 'barista@dnalecaffe.com',
-                    'role' => 'barista',
-                    'phone' => '081234567892',
+                    'email'    => 'barista@dnalecaffe.com',
+                    'role'     => 'barista',
+                    'phone'    => '081234567892',
                 ],
             ];
 
-            foreach ($usersToEnsure as $u) {
-                User::updateOrCreate(
-                    ['username' => $u['username']],
+            foreach ($defaultAccounts as $account) {
+                // firstOrCreate: hanya insert jika username belum ada, tidak pernah update
+                User::firstOrCreate(
+                    ['username' => $account['username']],
                     [
-                        'name' => $u['name'],
-                        'email' => $u['email'],
+                        'name'     => $account['name'],
+                        'email'    => $account['email'],
                         'password' => Hash::make('password'),
-                        'role' => $u['role'],
-                        'phone' => $u['phone'],
+                        'role'     => $account['role'],
+                        'phone'    => $account['phone'],
                     ]
                 );
             }

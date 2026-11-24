@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -65,6 +66,13 @@ class UserController extends Controller
         }
 
         $user->update($updateData);
+
+        // Invalidate semua session aktif milik user yang diubah agar
+        // data terbaru (nama, role, dll) langsung berlaku saat request berikutnya.
+        // Hanya dilakukan jika session driver menggunakan database.
+        if (config('session.driver') === 'database') {
+            DB::table('sessions')->where('user_id', $user->id)->delete();
+        }
 
         return redirect()->route('users.index')->with('success', 'Data karyawan berhasil diperbarui!');
     }
