@@ -189,18 +189,25 @@
                             <i class="fa-solid fa-user text-[9px] mr-0.5"></i>
                             {{ $order->user->name ?? '—' }}
                         </span>
-                        @if($nextStatus)
-                            <button type="button"
-                                    onclick="updateKitchenStatus({{ $order->id }}, '{{ $nextStatus }}', this)"
-                                    class="px-4 py-2 rounded-xl text-[11px] font-bold transition-all duration-150 cursor-pointer
-                                           {{ $order->kitchen_status === 'pending' ? 'bg-amber-500 hover:bg-amber-600 text-white' : '' }}
-                                           {{ $order->kitchen_status === 'cooking' ? 'bg-blue-500 hover:bg-blue-600 text-white' : '' }}
-                                           {{ $order->kitchen_status === 'ready'   ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : '' }}">
-                                {{ $nextLabel }}
-                            </button>
+                        @if(auth()->user()->isBarista())
+                            @if($nextStatus)
+                                <button type="button"
+                                        onclick="updateKitchenStatus({{ $order->id }}, '{{ $nextStatus }}', this)"
+                                        class="px-4 py-2 rounded-xl text-[11px] font-bold transition-all duration-150 cursor-pointer
+                                               {{ $order->kitchen_status === 'pending' ? 'bg-amber-500 hover:bg-amber-600 text-white' : '' }}
+                                               {{ $order->kitchen_status === 'cooking' ? 'bg-blue-500 hover:bg-blue-600 text-white' : '' }}
+                                               {{ $order->kitchen_status === 'ready'   ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : '' }}">
+                                    {{ $nextLabel }}
+                                </button>
+                            @else
+                                <span class="text-[11px] text-emerald-600 font-semibold">
+                                    <i class="fa-solid fa-circle-check mr-0.5"></i> Selesai
+                                </span>
+                            @endif
                         @else
-                            <span class="text-[11px] text-emerald-600 font-semibold">
-                                <i class="fa-solid fa-circle-check mr-0.5"></i> Selesai
+                            {{-- Admin: read-only mode --}}
+                            <span class="text-[11px] text-[#8A7A75] font-medium italic">
+                                <i class="fa-solid fa-eye text-[10px] mr-0.5"></i> Mode Pantau
                             </span>
                         @endif
                     </div>

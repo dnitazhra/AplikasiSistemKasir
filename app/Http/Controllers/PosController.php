@@ -8,7 +8,6 @@ use App\Models\Menu;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\OrderDetailVariant;
-use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -149,7 +148,6 @@ class PosController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Transaksi berhasil diproses!',
-                'order' => $order,
                 'receipt' => [
                     'order_number' => $order->order_number,
                     'date' => $order->created_at->format('d/m/Y H:i'),
@@ -176,7 +174,7 @@ class PosController extends Controller
                             'notes' => $d->notes,
                             'variants' => $d->variants->pluck('variant_option_name')->toArray(),
                         ];
-                    }),
+                    })->values(),
                 ],
             ]);
         } catch (\Throwable $e) {

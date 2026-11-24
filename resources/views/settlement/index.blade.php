@@ -88,7 +88,6 @@
                 <div class="sm:border-l sm:border-white/15 sm:pl-4 text-xs text-[#FAF6F0]/85">
                     <span class="block text-[11px] text-[#D9A05B] font-semibold">Waktu Settlement:</span>
                     <span class="font-bold text-white">{{ now()->translatedFormat('d F Y') }}</span>
-                    <span class="text-[11px] block text-[#FAF6F0]/70">{{ now()->translatedFormat('H:i') }} WIB</span>
                 </div>
             </div>
         </div>

@@ -335,12 +335,6 @@
                             <span>Muat Ulang</span>
                         </button>
                     @else
-                        <!-- Live Clock -->
-                        <div class="hidden sm:flex items-center gap-2 bg-[#FAF6F0] border border-[#EADBCE] px-3.5 py-1.5 rounded-xl text-xs font-medium text-[#3D231D]">
-                            <i class="fa-regular fa-clock text-[#C88A42]"></i>
-                            <span id="realtime-clock">{{ now()->translatedFormat('l, d M Y') }} • {{ now()->format('H:i') }} WIB</span>
-                        </div>
-
                         <!-- Quick POS Shortcut (Admin & Kasir) -->
                         @if(in_array(auth()->user()?->role, ['admin', 'cashier']))
                             <a href="{{ route('pos.index') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-[#D9A05B] to-[#C88A42] hover:brightness-105 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all duration-200">
@@ -417,24 +411,6 @@
                 navMenu.classList.toggle('hidden');
             });
         }
-
-        // Live clock updater
-        function updateClock() {
-            const clockEl = document.getElementById('realtime-clock');
-            if (!clockEl) return;
-            const now = new Date();
-            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            const dayName = days[now.getDay()];
-            const date = now.getDate();
-            const month = months[now.getMonth()];
-            const year = now.getFullYear();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            clockEl.textContent = `${dayName}, ${date} ${month} ${year} • ${hours}:${minutes}:${seconds} WIB`;
-        }
-        setInterval(updateClock, 1000);
     </script>
     @stack('scripts')
 </body>

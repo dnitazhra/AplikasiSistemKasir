@@ -5,13 +5,8 @@
 @section('page_subtitle', 'Pencatatan Pesanan & Pembayaran Cepat')
 
 @section('header_actions')
-    <!-- Live Clock & Tombol Muat Ulang Bersih -->
+    <!-- Tombol Muat Ulang -->
     <div class="flex items-center gap-2.5">
-        <div class="hidden sm:flex items-center gap-2 bg-[#FAF6F0] border border-[#EADBCE] px-3.5 py-1.5 rounded-xl text-xs font-semibold text-[#3D231D]">
-            <i class="fa-regular fa-clock text-[#C88A42]"></i>
-            <span id="realtime-clock">{{ now()->translatedFormat('l, d M Y') }} • {{ now()->format('H:i') }} WIB</span>
-        </div>
-
         <button type="button" onclick="window.location.reload()" 
                 class="inline-flex items-center gap-2 bg-[#FAF6F0] hover:bg-white border border-[#EADBCE] hover:border-[#D9A05B] text-[#3D231D] px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-xs hover:shadow-sm transition-all duration-200 cursor-pointer active:scale-95 group"
                 title="Muat Ulang Halaman POS">
@@ -837,23 +832,40 @@
             },
             body: JSON.stringify(payload)
         })
-        .then(res => res.json())
+        .then(res => {
+            // Check HTTP status first — non-2xx means the server returned an error
+            if (!res.ok) {
+                return res.json().then(errData => {
+                    throw new Error(errData.message || 'Server returned status ' + res.status);
+                });
+            }
+            return res.json();
+        })
         .then(data => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Selesai';
-
             if (data.success) {
-                // Close modals
+                // Close modals first
                 document.getElementById('modal-cash').classList.add('hidden');
                 document.getElementById('modal-qris').classList.add('hidden');
 
-                // Render Receipt
-                showReceipt(data.receipt);
-
-                // Reset cart
+                // Reset cart immediately (this always works)
                 cart = [];
                 renderCart();
+
+                // Then render receipt — wrap in try/catch so receipt errors
+                // don't trigger the outer catch which shows the error alert
+                try {
+                    showReceipt(data.receipt);
+                } catch (receiptErr) {
+                    console.error('Receipt rendering error:', receiptErr);
+                    alert('Transaksi berhasil! Namun terjadi kesalahan saat menampilkan struk.');
+                }
+
+                // Reset button state
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Selesai';
             } else {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Selesai';
                 alert(data.message || 'Gagal menyimpan pesanan.');
             }
         })

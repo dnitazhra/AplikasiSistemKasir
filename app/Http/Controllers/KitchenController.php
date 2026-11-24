@@ -14,9 +14,9 @@ class KitchenController extends Controller
 {
     public function products(Request $request): View
     {
-        $search     = $request->query('search', '');
+        $search = $request->query('search', '');
         $categoryId = $request->query('category_id', '');
-        $available  = $request->query('available', '');
+        $available = $request->query('available', '');
 
         $query = Menu::with('category');
 
@@ -32,12 +32,12 @@ class KitchenController extends Controller
             $query->where('is_available', $available === '1');
         }
 
-        $menus      = $query->orderBy('name')->get();
+        $menus = $query->orderBy('name')->get();
         $categories = Category::orderBy('name')->get();
 
-        $totalMenus     = Menu::count();
+        $totalMenus = Menu::count();
         $totalAvailable = Menu::where('is_available', true)->count();
-        $totalHabis     = Menu::where('is_available', false)->count();
+        $totalHabis = Menu::where('is_available', false)->count();
 
         return view('kitchen.products', compact(
             'menus', 'categories',
@@ -51,9 +51,9 @@ class KitchenController extends Controller
         $menu->update(['is_available' => ! $menu->is_available]);
 
         return response()->json([
-            'success'      => true,
+            'success' => true,
             'is_available' => $menu->is_available,
-            'message'      => $menu->is_available ? 'Menu diaktifkan (Tersedia)' : 'Menu ditandai Habis',
+            'message' => $menu->is_available ? 'Menu diaktifkan (Tersedia)' : 'Menu ditandai Habis',
         ]);
     }
 
@@ -127,6 +127,14 @@ class KitchenController extends Controller
 
     public function updateStatus(Request $request, Order $order): JsonResponse
     {
+        // Admin is read-only on kitchen — only barista can update status
+        if ($request->user()->isAdmin()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak. Admin hanya dapat memantau pesanan, bukan mengubah status.',
+            ], 403);
+        }
+
         $validated = $request->validate([
             'kitchen_status' => ['required', 'in:pending,cooking,ready,served'],
         ]);
