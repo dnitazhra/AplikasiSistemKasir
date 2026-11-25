@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\CafeTable;
+use App\Models\Menu;
+use App\Models\Order;
 use App\Models\User;
 use Tests\TestCase;
 
@@ -270,5 +272,62 @@ class NavbarNavigationTest extends TestCase
             'status' => 'available',
         ]);
         $invalidResponse->assertSessionHasErrors('area');
+    }
+
+    /**
+     * Memastikan halaman POS menampilkan gambar menu dan struktur keranjang serta proses checkout berjalan bersih.
+     */
+    public function test_pos_displays_menu_images_and_checkout_returns_valid_receipt(): void
+    {
+        $cashier = $this->getCashierUser();
+
+        $americano = Menu::where('name', 'Americano')->firstOrFail();
+        $this->assertNotNull($americano->image);
+        $this->assertFileExists(public_path($americano->image));
+
+        $posResponse = $this->actingAs($cashier)->get(route('pos.index'));
+        $posResponse->assertStatus(200);
+        $posResponse->assertSee(asset($americano->image), false);
+        $posResponse->assertSee('id="cart-items-container"', false);
+        $posResponse->assertSee('id="cart-empty"', false);
+
+        // Uji proses order Take Away agar bersih dan hapus order uji setelah verifikasi
+        $orderResponse = $this->actingAs($cashier)->postJson(route('pos.order'), [
+            'order_type' => 'take_away',
+            'payment_method' => 'cash',
+            'payment_status' => 'paid',
+            'cash_given' => 50000,
+            'items' => [
+                [
+                    'menu_id' => $americano->id,
+                    'quantity' => 1,
+                    'notes' => 'Test checkout',
+                    'variants' => [],
+                ],
+            ],
+        ]);
+
+        $orderResponse->assertStatus(200);
+        $orderResponse->assertJson([
+            'success' => true,
+        ]);
+        $orderResponse->assertJsonStructure([
+            'success',
+            'message',
+            'receipt' => [
+                'order_number',
+                'date',
+                'cashier',
+                'order_type',
+                'table_number',
+                'formatted_subtotal',
+                'formatted_total',
+                'payment_method',
+                'items',
+            ],
+        ]);
+
+        $orderNumber = $orderResponse->json('receipt.order_number');
+        Order::where('order_number', $orderNumber)->delete();
     }
 }

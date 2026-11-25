@@ -215,6 +215,8 @@
                 <p class="text-xs font-bold text-[#3D231D]">Keranjang Masih Kosong</p>
                 <p class="text-[11px] text-[#8A7A75] mt-1 max-w-[200px] mx-auto leading-relaxed">Pilih menu di katalog sebelah kiri untuk menambahkan pesanan.</p>
             </div>
+            <!-- Cart items container (isolated so #cart-empty is never removed from DOM) -->
+            <div id="cart-items-container" class="space-y-2.5 hidden"></div>
         </div>
 
         <!-- RINGKASAN PEMBAYARAN & TOMBOL CHECKOUT (PINNED BOTTOM) -->
@@ -665,19 +667,22 @@
 
     // Render Cart HTML
     function renderCart() {
-        const cartList = document.getElementById('cart-list');
+        const itemsContainer = document.getElementById('cart-items-container');
         const emptyState = document.getElementById('cart-empty');
         const countEl = document.getElementById('cart-item-count');
 
         if (cart.length === 0) {
-            cartList.innerHTML = '';
-            cartList.appendChild(emptyState);
+            itemsContainer.innerHTML = '';
+            itemsContainer.classList.add('hidden');
+            emptyState.classList.remove('hidden');
             countEl.textContent = '0 item dipilih';
             updateTotals();
             return;
         }
 
-        cartList.innerHTML = '';
+        emptyState.classList.add('hidden');
+        itemsContainer.classList.remove('hidden');
+        itemsContainer.innerHTML = '';
         let totalItems = 0;
 
         cart.forEach((item, idx) => {
@@ -713,7 +718,7 @@
                     </div>
                 </div>
             `;
-            cartList.appendChild(itemRow);
+            itemsContainer.appendChild(itemRow);
         });
 
         countEl.textContent = `${totalItems} item dipilih`;
@@ -820,6 +825,7 @@
         };
 
         const btn = method === 'cash' ? document.getElementById('btn-confirm-cash') : document.getElementById('btn-confirm-qris');
+        const originalBtnHtml = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses Transaksi...';
 
@@ -832,47 +838,42 @@
             },
             body: JSON.stringify(payload)
         })
-        .then(res => {
-            // Check HTTP status first — non-2xx means the server returned an error
+        .then(async res => {
+            const responseData = await res.json().catch(() => ({}));
             if (!res.ok) {
-                return res.json().then(errData => {
-                    throw new Error(errData.message || 'Server returned status ' + res.status);
-                });
+                throw new Error(responseData.message || 'Server returned status ' + res.status);
             }
-            return res.json();
+            return responseData;
         })
         .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = originalBtnHtml;
+
             if (data.success) {
-                // Close modals first
+                // Close checkout modals
                 document.getElementById('modal-cash').classList.add('hidden');
                 document.getElementById('modal-qris').classList.add('hidden');
 
-                // Reset cart immediately (this always works)
+                // Reset cart safely
                 cart = [];
                 renderCart();
 
-                // Then render receipt — wrap in try/catch so receipt errors
-                // don't trigger the outer catch which shows the error alert
+                // Show receipt modal
                 try {
                     showReceipt(data.receipt);
                 } catch (receiptErr) {
                     console.error('Receipt rendering error:', receiptErr);
                     alert('Transaksi berhasil! Namun terjadi kesalahan saat menampilkan struk.');
                 }
-
-                // Reset button state
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Selesai';
             } else {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Selesai';
                 alert(data.message || 'Gagal menyimpan pesanan.');
             }
         })
         .catch(err => {
+            console.error('Order submission error:', err);
             btn.disabled = false;
-            btn.innerHTML = 'Coba Lagi';
-            alert('Terjadi kesalahan saat memproses transaksi.');
+            btn.innerHTML = originalBtnHtml;
+            alert(err.message || 'Terjadi kesalahan saat memproses transaksi.');
         });
     }
 

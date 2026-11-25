@@ -119,22 +119,32 @@ class DatabaseSeeder extends Seeder
             string $description,
             float $price,
             bool $isAvailable = true,
-            array $variants = []
+            array $variants = [],
+            ?string $image = null
         ): Menu {
+            $resolvedImage = ($image && file_exists(public_path($image))) ? $image : null;
+
             $menu = Menu::firstOrCreate(
                 ['name' => $name],
                 [
                     'category_id' => $category->id,
                     'description' => $description,
                     'price' => $price,
-                    'image' => null,
+                    'image' => $resolvedImage,
                     'is_available' => $isAvailable,
                 ]
             );
 
-            // Pastikan category_id sesuai jika menu sudah ada
+            // Pastikan category_id dan gambar tersinkron jika menu sudah ada
+            $updates = [];
             if ($menu->category_id !== $category->id) {
-                $menu->update(['category_id' => $category->id]);
+                $updates['category_id'] = $category->id;
+            }
+            if (empty($menu->image) && $resolvedImage !== null) {
+                $updates['image'] = $resolvedImage;
+            }
+            if (! empty($updates)) {
+                $menu->update($updates);
             }
 
             foreach ($variants as $vDef) {
@@ -158,165 +168,196 @@ class DatabaseSeeder extends Seeder
         $americano = $makeMenu(
             $catCoffee, 'Americano',
             'Dua shot espresso murni dengan air panas atau dingin, bold dan segar.',
-            22000, true, $coffeeVariants
+            22000, true, $coffeeVariants,
+            'uploads/menus/1794296775_download.jpe'
         );
         $cappuccino = $makeMenu(
             $catCoffee, 'Cappuccino',
             'Espresso klasik dengan foam susu tebal yang creamy dan aroma harum.',
-            26000, true, $coffeeVariants
+            26000, true, $coffeeVariants,
+            'uploads/menus/1794296931_mocha.jpe'
         );
         $vanillaLatte = $makeMenu(
             $catCoffee, 'Vanilla Latte',
             'Espresso lembut berpadu sirup vanilla premium dan susu steamed segar.',
-            28000, true, $coffeeVariants
+            28000, true, $coffeeVariants,
+            'uploads/menus/1794361856_t-i-f-f-a-n-y.jpe'
         );
         $spanishLatte = $makeMenu(
             $catCoffee, 'Spanish Latte',
             'Perpaduan espresso kuat dengan susu kental manis yang creamy dan manis.',
-            28000, true, $coffeeVariants
+            28000, true, $coffeeVariants,
+            'uploads/menus/1794362021_spanish-iced-latter.jpe'
         );
         $kopiAren = $makeMenu(
             $catCoffee, 'Kopi Susu Gula Aren',
             'Espresso arabika dengan susu segar dan gula aren organik khas nusantara.',
-            25000, true, $coffeeVariants
+            25000, true, $coffeeVariants,
+            'uploads/menus/1794360735_ngopi-ala-cafe-di-rumah.jpe'
         );
 
         // ─── NON COFFEE (7 menu) ─────────────────────────────────────────
         $matcha = $makeMenu(
             $catNonCoffee, 'Matcha',
             'Bubuk matcha premium dari Uji Kyoto, creamy dan aromatik dengan susu segar.',
-            28000, true, $drinkVariants
+            28000, true, $drinkVariants,
+            'uploads/menus/1794361172_download-13.jpe'
         );
         $chocolate = $makeMenu(
             $catNonCoffee, 'Chocolate',
             'Cokelat Belgia pekat dengan susu segar, kaya rasa dan sangat memanjakan.',
-            26000, true, $drinkVariants
+            26000, true, $drinkVariants,
+            'uploads/menus/1794360344_download-7.jpe'
         );
         $milo = $makeMenu(
             $catNonCoffee, 'Milo',
             'Minuman malt cokelat klasik Milo disajikan dingin atau hangat dengan susu.',
-            22000, true, $drinkVariants
+            22000, true, $drinkVariants,
+            'uploads/menus/1794361194_iced-milo-chocolate-milkteamali.jpe'
         );
         $thaiTea = $makeMenu(
             $catNonCoffee, 'Thai Tea',
             'Teh Thailand otentik dengan paduan susu kental manis yang legit dan segar.',
-            22000, true, $drinkVariants
+            22000, true, $drinkVariants,
+            'uploads/menus/1794361900_download-15.jpe'
         );
         $lychee = $makeMenu(
             $catNonCoffee, 'Lychee Tea',
             'Teh ringan berpadu sirup leci segar dengan aroma bunga yang harum.',
-            20000, true, $drinkVariants
+            20000, true, $drinkVariants,
+            'uploads/menus/1794361007_lychee-tea.jpe'
         );
         $lemon = $makeMenu(
             $catNonCoffee, 'Lemon Tea',
             'Teh dingin menyegarkan dengan perasan lemon asli dan sentuhan mint.',
-            18000, true, $drinkVariants
+            18000, true, $drinkVariants,
+            'uploads/menus/1794360936_que-tal-un-rico-te-frio-para-la-hora-de-la-comida-laggs.jpe'
         );
         $mangoYakult = $makeMenu(
             $catNonCoffee, 'Mango Yakult',
             'Perpaduan mangga manis segar dengan Yakult probiotik, asam segar dan nikmat.',
-            22000, true, $drinkVariants
+            22000, true, $drinkVariants,
+            'uploads/menus/1794361052_download-12.jpe'
         );
 
         // ─── DESSERT (8 menu) ────────────────────────────────────────────
         $churros = $makeMenu(
             $catDessert, 'Churros',
             'Churros renyah berlumur kayu manis gula halus, disajikan dengan saus cokelat.',
-            28000
+            28000, true, [],
+            'uploads/menus/1794360362_download-8.jpe'
         );
         $cromboloni = $makeMenu(
             $catDessert, 'Cromboloni',
             'Perpaduan croissant dan bomboloni, diisi krim lembut dan dibalut gula halus.',
-            32000
+            32000, true, [],
+            'uploads/menus/1794360610_download-9.jpe'
         );
         $croissant = $makeMenu(
             $catDessert, 'Croissant',
             'Croissant mentega berlapis-lapis, renyah di luar dan lembut mengembang di dalam.',
-            25000
+            25000, true, [],
+            'uploads/menus/1794360584_ai-croissant-branding-aesthetic-bakery-concept.jpe'
         );
         $tiramisu = $makeMenu(
             $catDessert, 'Tiramisu',
             'Tiramisu klasik Italia dengan lapisan mascarpone lembut dan espresso premium.',
-            35000
+            35000, true, [],
+            'uploads/menus/1794361881_download-16.jpe'
         );
         $cheesecake = $makeMenu(
             $catDessert, 'Cheesecake',
             'Cheesecake New York style creamy dengan base biskuit renyah dan topping buah.',
-            35000
+            35000, true, [],
+            'uploads/menus/1794360312_on-instagram-at-yuka-cm-cafe.jpe'
         );
         $brownies = $makeMenu(
             $catDessert, 'Brownies',
             'Brownies cokelat pekat fudgy di dalam, sedikit renyah di luar, disajikan hangat.',
-            25000
+            25000, true, [],
+            'uploads/menus/1794360295_brownie-bites-tub.jpe'
         );
         $muffinCake = $makeMenu(
             $catDessert, 'Muffin Cake',
             'Muffin lembut dan fluffy tersedia dalam rasa cokelat chip dan blueberry.',
-            22000
+            22000, true, [],
+            'uploads/menus/1794361270_muffin-coklat.jpe'
         );
         $lavaCake = $makeMenu(
             $catDessert, 'Lava Cake',
             'Kue cokelat hangat dengan lelehan cokelat lumer di tengah, disajikan dengan es krim.',
-            36000
+            36000, true, [],
+            'uploads/menus/1794360913_download-11.jpe'
         );
 
         // ─── MAIN COURSE (6 menu) ────────────────────────────────────────
         $nasiGoreng = $makeMenu(
             $catMainCourse, 'Nasi Goreng',
             'Nasi goreng racikan chef dengan ayam, telur mata sapi, dan kerupuk renyah.',
-            35000
+            35000, true, [],
+            'uploads/menus/1794361313_nasi-goreng-indonesian-fried-rice.jpe'
         );
         $kwetiau = $makeMenu(
             $catMainCourse, 'Kwetiau Goreng',
             'Kwetiau goreng gurih dengan campuran seafood, telur, dan sayuran segar.',
-            35000
+            35000, true, [],
+            'uploads/menus/1794360895_15-minute-pad-see-ew-thai-stir-fried-noodles.jpe'
         );
         $carbonara = $makeMenu(
             $catMainCourse, 'Spaghetti Carbonara',
             'Spaghetti al dente dengan saus carbonara creamy dan irisan smoked beef gurih.',
-            42000
+            42000, true, [],
+            'uploads/menus/1794362042_creamy-garlic-parmesan-penne-pasta.jpe'
         );
         $chickenSteak = $makeMenu(
             $catMainCourse, 'Chicken Steak',
             'Dada ayam juicy dengan saus mushroom creamy, disajikan dengan kentang dan salad.',
-            48000
+            48000, true, [],
+            'uploads/menus/1794360329_download-6.jpe'
         );
         $tenderloin = $makeMenu(
             $catMainCourse, 'Tenderloin Steak',
             'Tenderloin sapi pilihan dipanggang medium-well dengan saus pepper black yang kaya.',
-            65000
+            65000, true, [],
+            'uploads/menus/1794362217_animale-jakarta.jpe'
         );
         $nasiAyamPop = $makeMenu(
             $catMainCourse, 'Nasi Ayam Pop',
             'Ayam kampung rebus empuk bumbu Minang dengan nasi putih pulen dan sambal hijau.',
-            32000, false // out of stock — simulasi menu habis
+            32000, false, [], // out of stock — simulasi menu habis
+            'uploads/menus/1794361294_download-14.jpe'
         );
 
         // ─── SNACKS (5 menu) ─────────────────────────────────────────────
         $mixPlatter = $makeMenu(
             $catSnacks, 'Mix Platter',
             'Kombinasi aneka camilan: kentang goreng, onion ring, nugget, dan saus pilihan.',
-            45000
+            45000, true, [],
+            'uploads/menus/1794361228_mix-pletter.jpe'
         );
         $frenchFries = $makeMenu(
             $catSnacks, 'French Fries',
             'Kentang goreng renyah seasoned, disajikan dengan saus sambal dan mayones.',
-            22000
+            22000, true, [],
+            'uploads/menus/1794360706_download-10.jpe'
         );
         $cireng = $makeMenu(
             $catSnacks, 'Cireng',
             'Aci goreng crispy khas Sunda dengan isian bumbu rujak pedas manis.',
-            18000
+            18000, true, [],
+            'uploads/menus/1794360562_cireng-salju.jpe'
         );
         $otakOtak = $makeMenu(
             $catSnacks, 'Otak-Otak',
             'Otak-otak ikan tenggiri bakar dengan bumbu rempah, disajikan dengan saus kacang.',
-            20000
+            20000, true, [],
+            'uploads/menus/1794361837_resep-otak-otak-goreng-oleh-xanders-kitchen.jpe'
         );
         $onionRing = $makeMenu(
             $catSnacks, 'Onion Ring',
             'Ring bawang bombay dibalut tepung crispy renyah, disajikan dengan saus ranch.',
-            22000, false // out of stock — simulasi menu habis
+            22000, false, [], // out of stock — simulasi menu habis
+            'uploads/menus/1794361475_crispy-air-fryer-onion-rings-recipe-youll-love.jpe'
         );
 
         // ── 7. SAMPLE ORDERS (data demo untuk Dashboard) ─────────────────
