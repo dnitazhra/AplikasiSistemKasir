@@ -199,10 +199,26 @@
 
             {{-- ── GAMBAR PRODUK ── --}}
             <div class="mx-4 mt-3 rounded-xl overflow-hidden bg-[#FAF6F0] border border-[#EADBCE] aspect-[4/3] flex items-center justify-center relative">
-                @if($menu->image && file_exists(public_path($menu->image)))
+                @if($menu->image)
                     <img src="{{ asset($menu->image) }}"
                          alt="{{ $menu->name }}"
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="display:none" class="w-full h-full flex flex-col items-center justify-center gap-2">
+                        @php
+                            $catSlug = $menu->category?->slug ?? '';
+                            $placeholderIcon = match(true) {
+                                $catSlug === 'coffee'      => ['fa-mug-hot',    'text-[#8A5A44]'],
+                                $catSlug === 'non-coffee'  => ['fa-glass-water','text-teal-500'],
+                                $catSlug === 'dessert'     => ['fa-cake-candles','text-pink-400'],
+                                $catSlug === 'main-course' => ['fa-bowl-food',  'text-amber-700'],
+                                $catSlug === 'snacks'      => ['fa-cookie-bite','text-orange-400'],
+                                default                    => ['fa-utensils',   'text-[#D9A05B]'],
+                            };
+                        @endphp
+                        <i class="fa-solid {{ $placeholderIcon[0] }} text-4xl {{ $placeholderIcon[1] }} opacity-50"></i>
+                        <span class="text-[10px] font-medium text-[#B9A99A] uppercase tracking-wider">No Image</span>
+                    </div>
                 @else
                     {{-- Placeholder icon berdasarkan kategori --}}
                     @php

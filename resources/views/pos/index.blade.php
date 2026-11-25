@@ -99,8 +99,25 @@
 
                             <!-- Visual Thumbnail (Fixed height, object-cover) -->
                             <div class="w-full h-28 sm:h-32 rounded-xl bg-[#FAF6F0] border border-[#EADBCE]/60 flex items-center justify-center text-[#D9A05B] group-hover:scale-[1.02] transition-transform duration-200 mb-2.5 shadow-2xs overflow-hidden shrink-0">
-                                @if($menu->image && file_exists(public_path($menu->image)))
-                                    <img src="{{ asset($menu->image) }}" alt="{{ $menu->name }}" class="w-full h-full object-cover">
+                                @if($menu->image)
+                                    <img src="{{ asset($menu->image) }}"
+                                         alt="{{ $menu->name }}"
+                                         class="w-full h-full object-cover"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <span class="hidden w-full h-full items-center justify-center">
+                                        @php
+                                            $slug = $menu->category?->slug ?? '';
+                                            [$pIcon, $pColor] = match(true) {
+                                                $slug === 'coffee'      => ['fa-mug-hot',    'text-[#8A5A44]'],
+                                                $slug === 'non-coffee'  => ['fa-glass-water','text-teal-500'],
+                                                $slug === 'dessert'     => ['fa-cake-candles','text-pink-400'],
+                                                $slug === 'main-course' => ['fa-bowl-food',  'text-amber-700'],
+                                                $slug === 'snacks'      => ['fa-cookie-bite','text-orange-400'],
+                                                default                 => ['fa-utensils',   'text-[#D9A05B]'],
+                                            };
+                                        @endphp
+                                        <i class="fa-solid {{ $pIcon }} text-3xl {{ $pColor }} opacity-50"></i>
+                                    </span>
                                 @else
                                     @php
                                         $slug = $menu->category?->slug ?? '';

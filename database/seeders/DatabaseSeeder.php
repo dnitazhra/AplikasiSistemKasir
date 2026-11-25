@@ -122,7 +122,9 @@ class DatabaseSeeder extends Seeder
             array $variants = [],
             ?string $image = null
         ): Menu {
-            $resolvedImage = ($image && file_exists(public_path($image))) ? $image : null;
+            // Simpan path gambar apa adanya — file sudah ada di Git (public/uploads/menus/)
+            // Tidak perlu cek file_exists() karena akan memblokir path saat git pull belum lengkap
+            $resolvedImage = $image ?: null;
 
             $menu = Menu::firstOrCreate(
                 ['name' => $name],

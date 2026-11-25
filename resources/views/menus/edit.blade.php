@@ -56,8 +56,9 @@
                 <label class="block text-xs font-bold text-[#3D231D] mb-1.5 uppercase tracking-wider">Foto Produk Menu (Opsional)</label>
                 <div class="flex items-center gap-4 p-4 bg-[#FAF6F0] rounded-xl border border-[#EADBCE]">
                     <div id="image-preview-container" class="w-16 h-16 rounded-xl bg-white border border-[#EADBCE] flex items-center justify-center text-[#D9A05B] overflow-hidden flex-shrink-0">
-                        @if($menu->image && file_exists(public_path($menu->image)))
-                            <img id="image-preview" src="{{ asset($menu->image) }}" alt="{{ $menu->name }}" class="w-full h-full object-cover">
+                        @if($menu->image)
+                            <img id="image-preview" src="{{ asset($menu->image) }}" alt="{{ $menu->name }}" class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; document.getElementById('preview-placeholder').style.display='block';">
                             <i class="fa-solid fa-image text-2xl text-[#C88A42] hidden" id="preview-placeholder"></i>
                         @else
                             <i class="fa-solid fa-image text-2xl text-[#C88A42]" id="preview-placeholder"></i>
